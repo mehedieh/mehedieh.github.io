@@ -1,50 +1,102 @@
 ---
 permalink: /
-title: "academicpages is a ready-to-fork GitHub Pages template for academic personal websites"
-excerpt: "About me"
+title: "How to start learning to code when you don't know where to start"
+excerpt: "Why is it so hard to figure out where to start?"
 author_profile: true
 redirect_from: 
   - /about/
   - /about.html
 ---
 
-This is the front page of a website that is powered by the [academicpages template](https://github.com/academicpages/academicpages.github.io) and hosted on GitHub pages. [GitHub pages](https://pages.github.com) is a free service in which websites are built and hosted from code and data stored in a GitHub repository, automatically updating when a new commit is made to the respository. This template was forked from the [Minimal Mistakes Jekyll Theme](https://mmistakes.github.io/minimal-mistakes/) created by Michael Rose, and then extended to support the kinds of content that academics have: publications, talks, teaching, a portfolio, blog posts, and a dynamically-generated CV. You can fork [this repository](https://github.com/academicpages/academicpages.github.io) right now, modify the configuration and markdown files, add your own PDFs and other content, and have your own site for free, with no ads! An older version of this template powers my own personal website at [stuartgeiger.com](http://stuartgeiger.com), which uses [this Github repository](https://github.com/staeiou/staeiou.github.io).
+![Program](/images/prog1.jpg)
 
-A data-driven personal website
-======
-Like many other Jekyll-based GitHub Pages templates, academicpages makes you separate the website's content from its form. The content & metadata of your website are in structured markdown files, while various other files constitute the theme, specifying how to transform that content & metadata into HTML pages. You keep these various markdown (.md), YAML (.yml), HTML, and CSS files in a public GitHub repository. Each time you commit and push an update to the repository, the [GitHub pages](https://pages.github.com/) service creates static HTML pages based on these files, which are hosted on GitHub's servers free of charge.
 
-Many of the features of dynamic content management systems (like Wordpress) can be achieved in this fashion, using a fraction of the computational resources and with far less vulnerability to hacking and DDoSing. You can also modify the theme to your heart's content without touching the content of your site. If you get to a point where you've broken something in Jekyll/HTML/CSS beyond repair, your markdown files describing your talks, publications, etc. are safe. You can rollback the changes or even delete the repository and start over -- just be sure to save the markdown files! Finally, you can also write scripts that process the structured data on the site, such as [this one](https://github.com/academicpages/academicpages.github.io/blob/master/talkmap.ipynb) that analyzes metadata in pages about talks to display [a map of every location you've given a talk](https://academicpages.github.io/talkmap.html).
+## Choose your ~~weapon~~ language
 
-Getting started
-======
-1. Register a GitHub account if you don't have one and confirm your e-mail (required!)
-1. Fork [this repository](https://github.com/academicpages/academicpages.github.io) by clicking the "fork" button in the top right. 
-1. Go to the repository's settings (rightmost item in the tabs that start with "Code", should be below "Unwatch"). Rename the repository "[your GitHub username].github.io", which will also be your website's URL.
-1. Set site-wide configuration and create content & metadata (see below -- also see [this set of diffs](http://archive.is/3TPas) showing what files were changed to set up [an example site](https://getorg-testacct.github.io) for a user with the username "getorg-testacct")
-1. Upload any files (like PDFs, .zip files, etc.) to the files/ directory. They will appear at https://[your GitHub username].github.io/files/example.pdf.  
-1. Check status by going to the repository settings, in the "GitHub pages" section
+As *Akira Toriyama* once said: " ***You should know a weapon doesn’t make the man*** ". It’s a quote from **Dragonball Z**, but the philosophy holds true for programming languages. A good developer is a good developer regardless of language. Learning any language will help you understand the core concepts of programming. However, you need to start someplace, and if you pick your first language wisely, you’ll drastically shorten the time to hit your goal.
 
-Site-wide configuration
-------
-The main configuration file for the site is in the base directory in [_config.yml](https://github.com/academicpages/academicpages.github.io/blob/master/_config.yml), which defines the content in the sidebars and other site-wide features. You will need to replace the default variables with ones about yourself and your site's github repository. The configuration file for the top menu is in [_data/navigation.yml](https://github.com/academicpages/academicpages.github.io/blob/master/_data/navigation.yml). For example, if you don't have a portfolio or blog posts, you can remove those items from that navigation.yml file to remove them from the header. 
+## Picking a language
 
-Create content & metadata
-------
-For site content, there is one markdown file for each type of content, which are stored in directories like _publications, _talks, _posts, _teaching, or _pages. For example, each talk is a markdown file in the [_talks directory](https://github.com/academicpages/academicpages.github.io/tree/master/_talks). At the top of each markdown file is structured data in YAML about the talk, which the theme will parse to do lots of cool stuff. The same structured data about a talk is used to generate the list of talks on the [Talks page](https://academicpages.github.io/talks), each [individual page](https://academicpages.github.io/talks/2012-03-01-talk-1) for specific talks, the talks section for the [CV page](https://academicpages.github.io/cv), and the [map of places you've given a talk](https://academicpages.github.io/talkmap.html) (if you run this [python file](https://github.com/academicpages/academicpages.github.io/blob/master/talkmap.py) or [Jupyter notebook](https://github.com/academicpages/academicpages.github.io/blob/master/talkmap.ipynb), which creates the HTML for the map based on the contents of the _talks directory).
+Picking a language boils down to what you want to do. This is a quick list of general development goals and what language(s) are your best options to get there 
 
-**Markdown generator**
+> NOTE: this is not meant to indicate that these are the only languages that you can use for a given domain, just my suggestion on what to start with)  
+  
+  - Front-end web development (user interface and interaction): Javascript, HTML & CSS
 
-I have also created [a set of Jupyter notebooks](https://github.com/academicpages/academicpages.github.io/tree/master/markdown_generator
-) that converts a CSV containing structured data about talks or presentations into individual markdown files that will be properly formatted for the academicpages template. The sample CSVs in that directory are the ones I used to create my own personal website at stuartgeiger.com. My usual workflow is that I keep a spreadsheet of my publications and talks, then run the code in these notebooks to generate the markdown files, then commit and push them to the GitHub repository.
+  - Back-end web development (services that front-end web apps and mobile apps call out to): Ruby, Python, Javascript, or PHP
 
-How to edit your site's GitHub repository
-------
-Many people use a git client to create files on their local computer and then push them to GitHub's servers. If you are not familiar with git, you can directly edit these configuration and markdown files directly in the github.com interface. Navigate to a file (like [this one](https://github.com/academicpages/academicpages.github.io/blob/master/_talks/2012-03-01-talk-1.md) and click the pencil icon in the top right of the content preview (to the right of the "Raw | Blame | History" buttons). You can delete a file by clicking the trashcan icon to the right of the pencil icon. You can also create new files or upload files by navigating to a directory and clicking the "Create new file" or "Upload files" buttons. 
+  - Mobile development: Swift (iOS) or Java (Android)
 
-Example: editing a markdown file for a talk
-![Editing a markdown file for a talk](/images/editing-talk.png)
+  - Windows development: C#
 
-For more info
-------
-More info about configuring academicpages can be found in [the guide](https://academicpages.github.io/markdown/). The [guides for the Minimal Mistakes theme](https://mmistakes.github.io/minimal-mistakes/docs/configuration/) (which this theme was forked from) might also be helpful.
+  - MacOS development: Swift or Objective-C
+
+  - Operating systems, file systems, embedded systems, etc: C/C++
+
+  - Game development: (C++, Unity and C#)
+
+  - Data Science: R 
+
+Naturally, there are other options for each of these. Javascript is useful for items 1-5, for instance. But the list is a good starting place as-is. 
+
+> NOTE: A number of people contacted me and mentioned that in certain places, especially outside the US, the above list is different for back-end web development. In those locations, C# and Java are used more often than Python or Ruby. The suggestion is to check job postings where you plan (or hope) to work for the job and companies you want to work in and see what languages they require.
+
+# Finding good resources before start learning
+
+![Program](/images/prog3.jpg)
+
+
+There are a ton of resources to learn to code out on the web. How do you sift through the chaff and find the real gems?
+
+Most resources fall into the following categories:
+- Books
+
+- Videos
+
+- Blogs/tutorials
+
+- Courses
+
+### Book
+
+Books are the traditional go-to resource. Search on [Libgen](https://www.libgen.is/) for your topic and read reviews on [Amazon](https://www.amazon.com/). Make sure that any books you're considering are new. Languages change and older books could slow your progress.
+
+### Video
+
+A lot of people have gravitated to videos to learn coding and other topics. [YouTube](https://www.youtube.com/) is the first place most people look. Fair warning, this is going to turn up a bunch of crap. Look at how many subscribers a given instructor has, and watch some videos to see if their style and method works for you. Another possible issue is that because video is more difficult to update for new versions of a language (or corresponding tools), some videos might be outdated.
+
+### Blog
+
+For blogs and tutorials, a simple google search like "best python tutorial" or "best swift tutorial for beginners" is a great place to start. As with videos, you'll have to try a few to see how they work with your learning style.
+
+### Online Course
+
+Online courses are the newest resource on the scene. [Codecademy](http://www.codecademy.com/) is one that a lot of people find immediately. However, after I talked to a lot of people who tried it, none really thought it did a good job. [Free Code Camp](http://www.freecodecamp.com/) or [The Odin Project](http://www.theodinproject.com/) are both highly regarded for web development. [Udacity](http://udacity.com/), [Coursera](http://www.coursera.com/), [Udemy](http://www.udemy.com/) all have courses in different genres. Each has reviews so you can compare and only look at ones that helped others.
+
+![Program](/images/prog2.jpg)
+
+-
+# Where you should start
+Each development goal in the above list is different enough to require different starting points. I have not personally tried all of them, but have come across them when doing research. There also might be better ones, and so if you know of any, let me know and I’ll update this list.
+
+- Front-end web development: [Free Code Camp](http://www.freecodecamp.com/)
+- Back-end web development: [Ruby (for Rails)](http://poignant.guide/), [Python (for Django)](https://learnpythonthehardway.org/book/), [Javascript (for Node)](http://www.freecodecamp.com/), [PHP ,The Right Way](http://www.phptherightway.com/), for places where C# and Java are used more often, see Windows development and Mobile (Java) development respectively for resources.
+- Mobile development: Swift [Lynda’s Swift Essentials](https://www.lynda.com/Swift-tutorials/Swift-3-Essential-Training-Basics/517449-2.html) (Check [Flatiron school’s free Swift course](https://www.lynda.com/Swift-tutorials/Swift-3-Essential-Training-Basics/517449-2.html), [Swift Programming book](https://smile.amazon.com/Swift-Programming-Ranch-Guide-Guides/dp/013461061X/ref=sr_1_1?s=books&ie=UTF8&qid=1493732230&sr=1-1&keywords=swift+programming) or Java [Head First Java](https://smile.amazon.com/Head-First-Java-Kathy-Sierra/dp/0596009208/ref=sr_1_2?ie=UTF8&qid=1493732143&sr=8-2&keywords=java), [University of Helsinki’s MOOC](http://mooc.fi/courses/2013/programming-part-1/)
+- Data Science: R [Swirl](http://swirlstats.com/) or [Coursera's R course](https://www.coursera.org/learn/r-programming)
+
+Once you pick your language and starting point and you start learning, some things will be obvious, but others will be difficult to understand. You’re going to run into trouble and with concepts and code errors. That’s normal. We’ve all been there. Getting unstuck takes practice too.
+
+![Program](/images/prog4.jpg)
+
+
+## How to get unstuck once you’ve started
+Once you start learning to code, you're going to run into problems that you don't know how to solve. This is normal and part of the process. You don't really learn unless you struggle through it. That said, you won't always be able to move forward without some help. So how do you find that help?
+
+First off, forget books. They aren't a great place to start here, because the number and types of errors they can cover is so small.
+
+Online is the easiest place to find help. Most devs look for solutions on StackOverflow or just google the error message (if they have one). Other solutions are to find newsgroups or forums dedicated to the language you're using.
+
+
+#### Author
+
+> **Mehedi Hasan** :zzz:
