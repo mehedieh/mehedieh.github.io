@@ -88,16 +88,16 @@ author:
   codepen          :
   dribbble         :
   flickr           :
-  facebook         : facebook.com/mehedx
+  facebook         : "mehedx"
   foursquare       :
   github           : "mehedieh"
   google_plus      :
   keybase          :
-  instagram        : instagram.com/mehedx
+  instagram        : "mehedx"
   impactstory      : #"https://profiles.impactstory.org/u/xxxx-xxxx-xxxx-xxxx"
   lastfm           :
   linkedin         : "mehedihasan1999"
-  orcid            : "http://orcid.org/yourorcidurl"
+  #orcid            : 
   pinterest        :
   soundcloud       :
   stackoverflow    : # http://stackoverflow.com/users/123456/username
@@ -164,7 +164,7 @@ kramdown:
   entity_output: as_char
   toc_levels: 1..6
   smart_quotes: lsquo,rsquo,ldquo,rdquo
-  enable_coderay: false
+  enable_coderay: true
 
 
 # Collections
@@ -206,7 +206,7 @@ defaults:
   # _teaching
   - scope:
       path: ""
-      type: teaching
+      type: Teaching
     values:
       layout: single
       author_profile: true
@@ -215,7 +215,7 @@ defaults:
   # _publications
   - scope:
       path: ""
-      type: publications
+      type: Videos
     values:
       layout: single
       author_profile: true
@@ -224,7 +224,7 @@ defaults:
   # _portfolio
   - scope:
       path: ""
-      type: portfolio
+      type: Blog
     values:
       layout: single
       author_profile: true
