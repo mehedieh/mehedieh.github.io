@@ -1,6 +1,6 @@
 ---
 title: "Boob in Python"
-excerpt: "Plotting Boob Graph in Python <br/><img src='/images/'>"
+excerpt: "Plotting Boob Graph in Python <br/><img src='/images/500x400.png'>"
 collection: portfolio
 ---
 
