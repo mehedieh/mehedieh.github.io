@@ -1,6 +1,6 @@
 ---
 title: "Catching the perpetrators"
-excerpt: " tracking down a bunch of nude peddlers and harassers from Bangladesh using basic networking <img src='/images/500x300.png'>"
+excerpt: " Tracking down a bunch of nude peddlers and harassers from Bangladesh using basic networking <img src='/images/500x300.png'>"
 collection: portfolio
 ---
 
