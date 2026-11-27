@@ -161,6 +161,19 @@ projects:
     demo_label: "Open Typeset"
     hue: 165
     motif: page
+  - slug: netsentinel
+    name: "NetSentinel"
+    featured: true
+    detail: true
+    kind: "Windows desktop app"
+    category: security
+    summary: "A defensive privacy and network monitor for Windows 11: which app talks to where, whether the microphone or camera was in use at the time, and an explainable risk score for every finding."
+    stack: ["Python", "CustomTkinter", "psutil", "Windows APIs", "SQLite", "Scapy"]
+    repo: "https://github.com/mehedieh/NetSentinel"
+    demo: ""
+    license: "MIT"
+    hue: 352
+    motif: network
   - slug: gstu-physics-smart-campus
     name: "GSTU Physics Smart Campus"
     featured: false
@@ -215,6 +228,7 @@ project_filters:
   - { slug: all, name: "All" }
   - { slug: android, name: "Android" }
   - { slug: web, name: "Web & extensions" }
+  - { slug: security, name: "Security" }
   - { slug: science, name: "Scientific computing" }
   - { slug: tools, name: "Tools" }
 

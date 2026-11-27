@@ -38,6 +38,7 @@
 {% macro project_glyph(p) -%}
 {%- if p.category == "android" %}{{ icon("android") }}
 {%- elif p.kind == "Chrome extension" %}{{ icon("puzzle") }}
+{%- elif p.category == "security" %}{{ icon("shield") }}
 {%- elif p.category == "science" %}{{ icon("wave") }}
 {%- elif p.category == "tools" %}{{ icon("tool") }}
 {%- else %}{{ icon("grid") }}{% endif %}
