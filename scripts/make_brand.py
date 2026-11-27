@@ -25,14 +25,15 @@ ICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
 """
 
 
-def mark(size: int, pad: float = 0.0) -> Image.Image:
+def mark(size: int, pad: float = 0.0, tile: bool = True) -> Image.Image:
     s = 8  # supersample
     S = size * s
     im = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
     inset = int(S * pad)
     box = S - 2 * inset
-    d.rounded_rectangle([inset, inset, inset + box, inset + box], radius=int(box * 9 / 32), fill=INK)
+    if tile:
+        d.rounded_rectangle([inset, inset, inset + box, inset + box], radius=int(box * 9 / 32), fill=INK)
     u = box / 32
     P = lambda x, y: (inset + x * u, inset + y * u)
     d.line([P(16, 8), P(11, 17), P(19.5, 23)], fill=PAPER, width=int(2 * u), joint="curve")
@@ -106,10 +107,54 @@ if __name__ == "__main__":
     ico = mark(64)
     ico.save(STATIC / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
     og_card("Mehedi Ackerman", ["Securing systems.", "Building software.", "Exploring the universe."]).save(BRAND / "og.png", optimize=True)
-    (STATIC / "site.webmanifest").write_text(json.dumps({
-        "name": "Mehedi Ackerman", "short_name": "Mehedi", "start_url": "/", "display": "browser",
-        "background_color": "#fbfbf9", "theme_color": "#fbfbf9",
-        "icons": [{"src": "/img/brand/icon-192.png", "sizes": "192x192", "type": "image/png"},
-                  {"src": "/img/brand/icon-512.png", "sizes": "512x512", "type": "image/png"}],
-    }, indent=2))
+    # Maskable icons: full-bleed background, mark inside the 80% safe zone (Android crops to any shape).
+    for size in (192, 512):
+        bg = Image.new("RGBA", (size, size), INK + (255,))
+        m = mark(int(size * 0.62), tile=False)
+        # draw the mark's glyph without its own rounded tile: re-render on ink so the tile blends in
+        bg.paste(m, ((size - m.size[0]) // 2, (size - m.size[1]) // 2), m)
+        bg.save(BRAND / f"icon-maskable-{size}.png")
+    mark(96).save(BRAND / "shortcut-96.png")
+
+    shots = [s for s in ["screen-home.png", "screen-writing.png", "screen-wide.png"] if (BRAND / s).exists()]
+    def shot(name):
+        with Image.open(BRAND / name) as im:
+            w, h = im.size
+        return {"src": f"/img/brand/{name}", "sizes": f"{w}x{h}", "type": "image/png",
+                "form_factor": "wide" if w > h else "narrow",
+                "label": {"screen-home.png": "Home: security, software and physics",
+                          "screen-writing.png": "Writing: notes and essays with search",
+                          "screen-wide.png": "Projects on a wide screen"}[name]}
+
+    manifest = {
+        "id": "/",
+        "name": "Mehedi Ackerman",
+        "short_name": "Mehedi",
+        "description": "Cybersecurity, software development and physics: projects, notes and essays.",
+        "lang": "en", "dir": "ltr",
+        "start_url": "/?source=pwa",
+        "scope": "/",
+        "display": "standalone",
+        "display_override": ["standalone", "minimal-ui"],
+        "orientation": "any",
+        "background_color": "#fbfbf9",
+        "theme_color": "#fbfbf9",
+        "categories": ["education", "books"],
+        "icons": [
+            {"src": "/img/brand/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+            {"src": "/img/brand/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+            {"src": "/img/brand/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+            {"src": "/img/brand/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+        ],
+        "shortcuts": [
+            {"name": "Writing", "short_name": "Writing", "description": "Notes and essays", "url": "/writing/?source=pwa",
+             "icons": [{"src": "/img/brand/shortcut-96.png", "sizes": "96x96", "type": "image/png"}]},
+            {"name": "Projects", "short_name": "Projects", "description": "Apps and tools", "url": "/projects/?source=pwa",
+             "icons": [{"src": "/img/brand/shortcut-96.png", "sizes": "96x96", "type": "image/png"}]},
+            {"name": "Physics", "short_name": "Physics", "description": "Physics and the double pendulum", "url": "/physics/?source=pwa",
+             "icons": [{"src": "/img/brand/shortcut-96.png", "sizes": "96x96", "type": "image/png"}]},
+        ],
+        "screenshots": [shot(s) for s in shots],
+    }
+    (STATIC / "site.webmanifest").write_text(json.dumps(manifest, indent=2) + "\n")
     print("brand assets written")

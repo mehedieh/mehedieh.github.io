@@ -11,8 +11,7 @@
   const stored = () => { try { return localStorage.getItem("theme"); } catch { return null; } };
   const applyTheme = (t) => {
     doc.setAttribute("data-theme", t);
-    const meta = $('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", t === "dark" ? "#0c0d10" : "#fbfbf9");
+    $$('meta[name="theme-color"]').forEach((meta) => meta.setAttribute("content", t === "dark" ? "#0c0d10" : "#fbfbf9"));
     $$(".theme-toggle").forEach((b) => {
       b.setAttribute("aria-label", t === "dark" ? "Switch to light theme" : "Switch to dark theme");
       b.setAttribute("aria-pressed", String(t === "dark"));
@@ -26,6 +25,12 @@
     applyTheme(next);
   }));
   themeMedia.addEventListener?.("change", (e) => { if (!stored()) applyTheme(e.matches ? "dark" : "light"); });
+
+  /* ---------------- Installable app (service worker) ---------------- */
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1")) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+  }
+  $$("[data-retry]").forEach((b) => b.addEventListener("click", () => location.reload()));
 
   /* ---------------- Header + mobile nav ---------------- */
   const header = $(".site-header");

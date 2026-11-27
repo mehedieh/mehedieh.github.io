@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="notfound">
+  <div class="wrap">
+    <span class="meta">Offline</span>
+    <h1>You're offline.</h1>
+    <p class="lede" style="margin-top:1.25rem">This page hasn't been saved on your device yet. Pages you've opened before, and the main sections of the site, still work without a connection.</p>
+    <div class="btn-row" style="margin-top:1.75rem">
+      <a class="btn btn--primary" href="/">Home</a>
+      <a class="btn btn--ghost" href="/writing/">Writing</a>
+      <button class="btn btn--ghost" type="button" data-retry>Try again</button>
+    </div>
+  </div>
+</section>
+{% endblock %}

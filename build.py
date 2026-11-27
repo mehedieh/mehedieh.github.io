@@ -374,6 +374,7 @@ class Builder:
             shutil.rmtree(OUT)
         shutil.copytree(STATIC, OUT)
         (OUT / ".nojekyll").write_text("")
+        self.version_admin_assets()
 
         featured = [p for p in self.projects if p.get("featured")]
         latest = self.posts[0].date if self.posts else None
@@ -407,6 +408,8 @@ class Builder:
                         lastmod=post.updated or post.date, og_type="article", nav="writing")
         self.render("contact.html", "/contact/", title="Contact",
                     description="How to reach Mehedi Ackerman: email, GitHub and LinkedIn.")
+        self.render("offline.html", "/offline/", title="Offline", sitemap=False, noindex=True,
+                    description="You're offline.")
         self.render("404.html", "/404.html", title="Page not found", sitemap=False, noindex=True,
                     canonical="/404.html", description="This page does not exist.")
 
@@ -414,7 +417,41 @@ class Builder:
         self.flush()
         self.feeds()
         self.write_highlight_css()
+        self.service_worker()
         print(f"Built {len(self.pages)} pages, {len(self.posts)} posts → {OUT.relative_to(ROOT)}/")
+
+    def service_worker(self) -> None:
+        """Generate /sw.js: precache every page plus the shell assets; version = content hash."""
+        import hashlib
+        pages = [r for r, _ in self.pages] + ["/offline/"]
+        assets = [f"/css/main.css?v={self.asset_version('css/main.css')}", f"/js/main.js?v={self.asset_version('js/main.js')}",
+                  f"/css/highlight.css?v={self.asset_version('css/main.css')}", "/katex/katex.min.css", "/favicon.ico", "/img/brand/icon.svg",
+                  "/img/brand/icon-192.png", "/img/me-320.webp", "/img/me-320.jpg", "/img/me-640.webp", "/site.webmanifest", "/search.json"]
+        # Everything a reader needs offline: math fonts and article figures.
+        for folder in ("katex/fonts", "img/posts"):
+            assets += sorted("/" + p.relative_to(OUT).as_posix() for p in (OUT / folder).glob("*") if p.suffix in {".woff2", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif"})
+        h = hashlib.sha1()
+        for p in sorted(OUT.rglob("*")):
+            if p.is_file() and p.name != "sw.js" and "admin" not in p.parts:
+                h.update(str(p.relative_to(OUT)).encode()); h.update(p.read_bytes())
+        h.update(json.dumps([pages, assets]).encode())
+        js = self.env.get_template("sw.js").render(version=h.hexdigest()[:12], pages=pages, assets=assets)
+        (OUT / "sw.js").write_text(js, encoding="utf-8")
+
+    def version_admin_assets(self) -> None:
+        """Add ?v=<hash> to Writer's CSS/JS so browsers never mix old and new files."""
+        page = OUT / "admin" / "index.html"
+        if not page.exists():
+            return
+        html_text = page.read_text(encoding="utf-8")
+
+        def stamp(m: re.Match) -> str:
+            rel = m.group(2)
+            src = STATIC / rel.lstrip("/")
+            return f'{m.group(1)}="{rel}?v={self.asset_version(rel.lstrip("/"))}"' if src.exists() else m.group(0)
+
+        html_text = re.sub(r'(src|href)="(/(?:admin|css|katex|js)/[^"?]+\.(?:js|css))"', stamp, html_text)
+        page.write_text(html_text, encoding="utf-8")
 
     # Old Jekyll URLs keep working.
     def redirects(self) -> None:
