@@ -309,6 +309,25 @@ def project_art(motif: str, fit: str = "slice") -> str:
                 parts.append(f'<rect x="200" y="{y}" width="{w}" height="4" rx="2" fill="#d5d9de"/>')
                 y += 12
             y += 14
+    elif motif == "network":
+        # A host in the middle, the programs' connections fanning out; one flagged peer.
+        cx, cy = 300, 205
+        peers = [(95, 90), (150, 315), (300, 58), (470, 82), (520, 220), (455, 335), (85, 205)]
+        for i, (px, py) in enumerate(peers):
+            flagged = i == 3
+            cls = "art-ink" if flagged else "art-soft"
+            dash = ' stroke-dasharray="6 6"' if flagged else ""
+            parts.append(f'<line class="{cls}" x1="{cx}" y1="{cy}" x2="{px}" y2="{py}" stroke-width="{2.5 if flagged else 1.6}"{dash}/>')
+        for i, (px, py) in enumerate(peers):
+            if i == 3:
+                parts.append(f'<circle class="art-ink" cx="{px}" cy="{py}" r="20" fill="none" stroke-width="2"/>')
+                parts.append(f'<circle class="art-fill" cx="{px}" cy="{py}" r="9"/>')
+            else:
+                parts.append(f'<circle class="art-fill" cx="{px}" cy="{py}" r="7" opacity=".55"/>')
+        for r, op in ((70, .25), (48, .45)):
+            parts.append(f'<circle class="art-soft" cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke-width="1.5" opacity="{op}"/>')
+        parts.append(f'<rect class="art-fill" x="{cx - 26}" y="{cy - 20}" width="52" height="34" rx="5"/>')
+        parts.append(f'<rect class="art-fill" x="{cx - 14}" y="{cy + 18}" width="28" height="5" rx="2"/>')
     else:  # grid
         for i in range(10):
             for j in range(7):

@@ -591,3 +591,8 @@ time, .meta, .pill, .count, .w-count, .status, .crumb [aria-current], .tabular {
 .prose figcaption, .prose table { font-family: var(--font-sans); }
 .lede { font-family: var(--font-display); font-size: 1.22rem; line-height: 1.6; letter-spacing: 0; }
 .split__head h2 { max-width: 16ch; }
+
+/* Project app icon beside the title */
+.project-title{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+.project-icon{width:56px;height:56px;border-radius:14px;flex:none;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+@media (max-width:560px){.project-icon{width:44px;height:44px;border-radius:11px}}

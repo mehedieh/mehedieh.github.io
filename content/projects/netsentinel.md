@@ -1,55 +1,52 @@
 ---
-problem: "Windows does not make it easy to see which program is talking to which server, or whether an app that just used your microphone sent anything out afterwards. Most tools either show raw connection tables with no context or label every unfamiliar IP as a threat. NetSentinel shows the facts, explains every flag, and says what it can't see."
-platform: "Windows 11 (Windows 10 1903+) · Python 3.12+ or a portable .exe"
+problem: "Windows will tell you that something is using the network, but not which program, where it is talking to, whether the microphone or camera was on at the same time, or why any of it should worry you. NetSentinel answers those questions on your own PC, and it shows its evidence instead of just raising alarms."
+platform: "Windows 11 (Windows 10 1903+ also works) · Python 3.12 / 3.13"
 ---
 
 ## What it does
 
-![NetSentinel's Security Overview: active connections, upload and download totals, suspicious-connection count, microphone and camera status, a live network activity timeline and the monitoring-capabilities panel](/img/projects/netsentinel-overview.webp)
+NetSentinel is a defensive desktop app for Windows. It watches your own computer and shows you:
 
-NetSentinel is a desktop monitor for your own Windows PC. It runs locally, needs no account or cloud service, and shows:
+- **Which programs are connecting where**: every TCP and UDP connection, with the process responsible, its file path and whether its code signature is valid
+- **When the microphone or camera was in use**, and which app was using it
+- **Why something was flagged**: each alert comes with the evidence behind it and an honest note on what that evidence cannot prove
 
-- **Every live connection**: the responsible process, its executable path, publisher and code-signing status, parent process, destination, port, protocol and state
-- **Microphone and camera activity**: which app is using the device right now, and when each app last started and stopped using it
-- **Privacy correlations**: when an app uses the microphone or camera and then opens an outbound connection shortly afterwards, with the destination, the timing and, when measured, the bytes uploaded in that window
-- **DNS and destinations**: domain-to-IP mapping, reverse DNS, first-seen tracking, and heuristics for DNS tunnelling and algorithmically generated domains
-- **Traffic analysis**: upload and download per application, destination and protocol, unusual upload spikes, periodic "beacon-like" reconnects and long-lived connections
-- **A searchable history** in a local SQLite database, with CSV and JSON reports
+## Key features
 
-## Explainable risk, not alarm bells
+- **Live connections** through `psutil`, with code-signature checks via `Get-AuthenticodeSignature` and `WinVerifyTrust`
+- **Per-connection traffic**: TCP byte counts through Windows' extended statistics (EStats) when run as administrator
+- **Microphone and camera history** from the Windows capability-access store, so you can see which apps used them and when
+- **DNS visibility** from the DNS-Client event log and the DNS cache, so connections can be matched to the names that were looked up
+- **Detection heuristics**: sudden traffic spikes (EWMA baselines), beaconing (connections at suspiciously regular intervals) and signs of DNS tunnelling or algorithm-generated domains
+- **Optional threat intelligence**: VirusTotal, AbuseIPDB and AlienVault OTX lookups, used only if you turn them on and add your own keys
+- **Context for addresses**: RDAP ownership lookups and offline GeoIP through a local MaxMind database
+- **Reversible blocking**: block a program or address with a Windows Firewall rule, and remove it again with one click
+- **Reports**: export to CSV or JSON, or run headless from the command line, for example `--headless -d 60 --report full --format json`
 
-Each finding carries a score built from named factors, such as an unsigned executable talking to the internet, a program running from a temporary folder, an uncommon port or a regular reconnect interval. Every alert answers five questions: what was detected, why it was flagged, the supporting evidence, what remains uncertain, and what to check next.
+## An honest risk engine
 
-A few rules keep the results honest:
+Security tools lose trust when they cry wolf. NetSentinel's risk engine is built to be explainable:
 
-- A public IP address is never suspicious on its own, and an unsigned program is only a small factor.
-- Heuristic findings are capped at **High**. **Critical** needs a verified match from a threat-intelligence provider or your own blocklist.
-- A microphone/camera correlation alert always says that timing is **not proof** that audio or video was sent. Encrypted traffic is never decrypted or inspected.
-- Byte counts appear only when they were actually measured. Otherwise the app says "not measured" and explains why.
+- Every risk score lists the reasons that produced it
+- Heuristics alone are capped at **High**. A **Critical** rating needs a verified match from threat intelligence or a blocklist
+- When a connection happens while the microphone or camera is in use, the alert says so, and also says plainly that the timing is **not proof** of spying
 
-## Honest about Windows' limits
+## What it will never do
 
-The privacy monitor reads the same Windows store that drives the microphone and camera indicator. It never opens a device or records anything. The app separates current access, recent access, permission settings and history, and lists its blind spots in the interface: hardware used directly by drivers, the individual website inside a browser, and sessions from before NetSentinel was running.
-
-Some features need Administrator rights, and the app asks only when you choose them: per-connection TCP byte counters, packet-header capture, reading the DNS Client event log, and reversible firewall blocks. Each block shows its consequences, asks for confirmation, and can be removed again from Settings.
-
-## Private by design
-
-Nothing leaves the computer unless you allow it. Threat-intelligence lookups (VirusTotal, AbuseIPDB, AlienVault OTX) are optional and send only the IP address or domain, never logs, files or payloads. Private and local addresses are never sent. API keys are encrypted with Windows DPAPI. The database stores metadata only: no payloads, audio, video, passwords or cookies.
+NetSentinel is a monitor you can trust because of its limits. It never hides itself, never opens your microphone or camera, never records the content of your traffic, never decrypts TLS, never disables Microsoft Defender or the Windows Firewall, and never sends data anywhere without your explicit permission.
 
 ## How it is built
 
-NetSentinel is written in Python with a CustomTkinter interface. Background workers do the monitoring and the interface reads thread-safe snapshots, so the window stays responsive and monitoring continues whichever page is open.
+- **Python** with **CustomTkinter** for a ten-page desktop interface, and **matplotlib** for charts
+- Windows is reached directly through `ctypes` and `winreg`, plus PowerShell, `wevtutil` and `netsh`; packet capture with **scapy** and **Npcap** is optional
+- History is kept in **SQLite** in WAL mode, and API keys are encrypted with Windows **DPAPI**, so they are tied to your user account
+- **47 pytest tests** cover unit, integration and GUI smoke checks
+- It can be packaged as a **portable .exe** that runs without administrator rights; some features, such as per-connection byte counts, need them
 
-```text
-core/network_monitor.py     connection diffing via psutil (GetExtendedTcpTable/UdpTable)
-core/process_monitor.py     identity, parent, Authenticode/catalog signature checks
-core/privacy_monitor.py     CapabilityAccessManager ConsentStore (mic & camera)
-core/correlation_engine.py  device access ↔ outbound connection windows
-core/traffic_analyzer.py    TCP EStats byte counters, spikes, beaconing
-core/dns_monitor.py         DNS Client log, DNS cache, tunnelling heuristics
-core/risk_engine.py         explainable factors → score → severity
-database/                   SQLite (WAL, single writer, migrations, retention)
-```
+## Getting started
 
-Windows APIs are reached through `ctypes`, `winreg` and built-in tools (`wevtutil`, `netsh`, PowerShell). It needs no pywin32 and no drivers beyond the optional Npcap. Missing Python packages are installed automatically on first run, and the test suite covers the engines with simulated events and controlled local connections, never real malware. A PyInstaller build produces a single portable `NetSentinel.exe`.
+Clone the repository, then run `setup.ps1` once and start the app with `run.ps1` (add `-Admin` for the features that need administrator rights). Double-click `.bat` launchers are included too. The [README on GitHub](https://github.com/mehedieh/NetSentinel) has the full instructions.
+
+## Use it responsibly
+
+Use NetSentinel only on computers you own or are authorised to monitor. It helps you understand what your PC is doing; it is not an antivirus and does not replace one.

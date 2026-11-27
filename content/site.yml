@@ -110,6 +110,19 @@ writing_categories:
 # ── Projects ────────────────────────────────────────────────────────────────
 # `detail: true` means content/projects/<slug>.md exists and gets its own page.
 projects:
+  - slug: netsentinel
+    name: "NetSentinel"
+    featured: true
+    detail: true
+    kind: "Windows desktop app"
+    category: security
+    summary: "A defensive network and privacy monitor for Windows 11. It shows which programs your PC talks to, when the microphone or camera was in use, and explains why anything looks suspicious, with the evidence and its limits."
+    stack: ["Python", "CustomTkinter", "psutil", "SQLite", "Windows APIs"]
+    repo: "https://github.com/mehedieh/NetSentinel"
+    license: "MIT"
+    icon: "/img/projects/netsentinel.png"
+    hue: 350
+    motif: network
   - slug: wordsmrt
     name: "WordSmrt"
     featured: true
@@ -213,6 +226,7 @@ projects:
 
 project_filters:
   - { slug: all, name: "All" }
+  - { slug: security, name: "Security" }
   - { slug: android, name: "Android" }
   - { slug: web, name: "Web & extensions" }
   - { slug: science, name: "Scientific computing" }
