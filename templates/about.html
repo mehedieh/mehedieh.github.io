@@ -10,7 +10,7 @@
   <div class="wrap profile">
     <div>
       <h1>Physicist by training. Engineer by habit.</h1>
-      <p class="lede">I'm an undergraduate in physics at Gopalganj Science and Technology University in Bangladesh. Along the way I started building software, and since 2021 I've worked as a cyber security analyst — helping people when that software, or someone using it, is turned against them.</p>
+      <p class="lede">I studied physics at Gopalganj Science and Technology University in Bangladesh, graduating with a BSc in December 2026. Along the way I started building software, and since 2021 I've worked as a cyber security analyst — helping people when that software, or someone using it, is turned against them.</p>
       <div class="btn-row" style="margin-top:1.5rem">
         <a class="btn btn--primary" href="/contact/">Contact me</a>
         {% if site.links.cv %}<a class="btn btn--ghost" href="{{ site.links.cv }}" download>{{ m.icon("download") }}Download CV</a>{% endif %}
@@ -31,7 +31,7 @@
     <div class="split__head"><h2 id="intro">Introduction</h2></div>
     <div class="prose">
       <p>My work sits where three interests overlap. Physics taught me to reduce a problem to the variables that matter and to distrust an answer I can't derive. Software gave me a way to turn ideas into tools other people can use. Security is the discipline that asks what happens when those tools meet someone who wants to misuse them.</p>
-      <p>I keep this site as a record of that work: the apps I build, the physics I'm studying, and notes written to make sure I actually understand something.</p>
+      <p>I keep this site as a record of that work: the apps I build, the physics I've studied, and notes written to make sure I actually understand something.</p>
     </div>
   </div>
 </section>
@@ -46,6 +46,7 @@
           {% if e.years %}<span class="meta">{{ e.years }}</span>{% endif %}
           <h3>{{ e.degree }}</h3>
           <p>{{ e.institution }}, {{ e.location }}</p>
+          {% if e.result %}<p><strong>{{ e.result }}</strong></p>{% endif %}
           {% if e.note %}<p>{{ e.note[:1] | upper }}{{ e.note[1:] }}.</p>{% endif %}
         </li>
         {% endfor %}

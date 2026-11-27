@@ -8,7 +8,7 @@
     {"@type": "Person", "@id": site.url ~ "/#person", "name": site.author.name, "alternateName": site.author.also_known_as,
      "url": site.url ~ "/", "image": site.url ~ "/img/me.jpg",
      "jobTitle": "Cyber Security Analyst",
-     "affiliation": {"@type": "CollegeOrUniversity", "name": "Gopalganj Science and Technology University"},
+     "alumniOf": {"@type": "CollegeOrUniversity", "name": "Gopalganj Science and Technology University"},
      "knowsAbout": ["Cybersecurity", "Information security", "Android development", "Physics", "Computational physics"],
      "sameAs": [site.links.github, site.links.linkedin, site.links.twitter] | select | list}
   ]
@@ -31,7 +31,7 @@
         <span class="line">Building software.</span>
         <span class="line line--quiet">Exploring the universe.</span>
       </h1>
-      <p class="lede" data-reveal="3">I'm {{ site.author.name }} — a physics undergraduate at GSTU, Bangladesh, a cybersecurity analyst since 2021, and a software developer. I build privacy-respecting Android apps, write about physics, and care about how systems fail.</p>
+      <p class="lede" data-reveal="3">I'm {{ site.author.name }} — a physics graduate of GSTU, Bangladesh, a cybersecurity analyst since 2021, and a software developer. I build privacy-respecting Android apps, write about physics, and care about how systems fail.</p>
       <div class="btn-row" data-reveal="4">
         <a class="btn btn--primary" href="/projects/">Explore my work</a>
         <a class="btn btn--ghost" href="/about/">About me</a>

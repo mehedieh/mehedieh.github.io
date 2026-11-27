@@ -8,7 +8,7 @@ lang: en
 title: "Mehedi Ackerman"
 tagline: "Security, software and physics"
 description: >-
-  Mehedi Ackerman is a physics undergraduate at Gopalganj Science and Technology
+  Mehedi Ackerman is a physics graduate of Gopalganj Science and Technology
   University (GSTU), Bangladesh, and a cybersecurity analyst who builds
   privacy-respecting software.
 google_site_verification: "vwYCfky0cvDbXOZf8paQPxN_K8ZbjiEkcynzIjf92jY"
@@ -32,9 +32,10 @@ links:
 education:
   - institution: "Gopalganj Science and Technology University (GSTU)"
     note: "formerly Bangabandhu Sheikh Mujibur Rahman Science & Technology University (BSMRSTU)"
-    degree: "BSc in Physics (in progress)"
+    degree: "BSc in Physics"
+    result: "CGPA 3.20 / 4.00"
     location: "Gopalganj, Bangladesh"
-    years: "April 2022 – present"
+    years: "April 2022 – December 2026"
   - institution: "Ibn Taimiya School & College"
     note: ""
     degree: "Higher Secondary Certificate (HSC), Science"
