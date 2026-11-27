@@ -18,6 +18,7 @@ templates/            ← Jinja2 layouts (base, home, about, security, projects,
 static/
   css/main.css        ← design tokens (light + dark), layout and components
   js/main.js          ← theme toggle, menu, filters, search, pendulum, reading progress
+  admin/              ← Writer: in-browser editor that publishes posts via the GitHub API
   img/                ← portrait, post figures, brand assets
   katex/              ← KaTeX stylesheet and fonts (self-hosted)
 scripts/
@@ -73,6 +74,23 @@ Put images in `static/img/posts/` and reference them as `/img/posts/name.png`.
 Add `draft: true` to keep a post out of the build. The URL becomes `/writing/short-slug/`.
 Reading time, table of contents (3+ headings), syntax highlighting, RSS, sitemap and search
 index are all generated automatically.
+
+## Writing from the browser (Writer)
+
+Open **https://mehedieh.github.io/admin/** on any device to write, preview and publish posts
+without touching Git. It commits `content/posts/YYYY-MM-DD-slug.md` (and any images, to
+`static/img/posts/`) straight to this repository in a single commit; the Pages workflow then
+rebuilds the site. It can also open and edit existing posts; changing a post's slug keeps
+the old URL working with a redirect.
+
+One-time setup: create a **fine-grained personal access token** at
+GitHub → Settings → Developer settings → Fine-grained tokens, with
+*Repository access: Only select repositories → mehedieh.github.io* and permissions
+**Contents: Read and write** and **Actions: Read** (optional, shows build progress).
+Paste it into Writer's settings (gear icon). The token is stored only in that browser and is
+sent only to api.github.com. Revoke it on GitHub if a device is lost.
+
+The page is public but does nothing without a token, and it is excluded from search engines.
 
 ## Editing your details
 

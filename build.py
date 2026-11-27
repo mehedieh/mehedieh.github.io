@@ -447,7 +447,7 @@ class Builder:
         (OUT / "sitemap.xml").write_text(
             '<?xml version="1.0" encoding="UTF-8"?>\n'
             f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n', encoding="utf-8")
-        (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {url}/sitemap.xml\n", encoding="utf-8")
+        (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: {url}/sitemap.xml\n", encoding="utf-8")
 
         index = [{"t": p.title, "u": p.url, "c": p.category, "d": p.description,
                   "x": p.text[:6000]} for p in self.posts]
