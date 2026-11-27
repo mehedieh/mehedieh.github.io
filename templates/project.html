@@ -15,7 +15,7 @@
     <p class="lede" style="margin-top:1rem">{{ p.summary }}</p>
     <div class="btn-row" style="margin-top:1.5rem">
       {% if p.repo %}<a class="btn btn--primary" href="{{ p.repo }}" rel="noopener">{{ m.icon("github") }}View source on GitHub</a>{% endif %}
-      {% if p.demo %}<a class="btn btn--ghost" href="{{ p.demo }}" rel="noopener">{{ m.icon("arrow-up-right") }}Open live demo</a>{% endif %}
+      {% if p.demo %}<a class="btn {{ 'btn--ghost' if p.repo else 'btn--primary' }}" href="{{ p.demo }}"{% if p.demo | is_external %} rel="noopener"{% endif %}>{{ m.icon("arrow-up-right") }}{{ p.demo_label or "Open live demo" }}</a>{% endif %}
     </div>
     <div class="project-art" role="img" aria-label="Illustration for {{ p.name }}">
       {{ project_art(p.motif, "meet") | safe }}
@@ -36,6 +36,7 @@
       <div><dt>Built with</dt><dd><ul class="tags">{% for s in p.stack %}<li class="pill">{{ s }}</li>{% endfor %}</ul></dd></div>
       {% if p.license %}<div><dt>Licence</dt><dd>{{ p.license }}</dd></div>{% endif %}
       {% if p.status %}<div><dt>Status</dt><dd>{{ p.status }}</dd></div>{% endif %}
+      {% if p.demo and not (p.demo | is_external) %}<div><dt>Use it</dt><dd><a href="{{ p.demo }}">{{ site.url | replace("https://", "") }}{{ p.demo }}</a></dd></div>{% endif %}
       {% if p.repo %}<div><dt>Repository</dt><dd><a href="{{ p.repo }}" rel="noopener" style="word-break:break-all">{{ p.repo | replace("https://", "") }}</a></dd></div>{% endif %}
     </dl>
   </aside>

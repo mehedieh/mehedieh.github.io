@@ -148,6 +148,19 @@ projects:
     license: "MIT"
     hue: 28
     motif: track
+  - slug: typeset
+    name: "Typeset"
+    featured: true
+    detail: true
+    kind: "Web app"
+    category: web
+    summary: "A LaTeX CV studio in the browser: live, page-accurate preview, export to .tex for pdfLaTeX or Overleaf, and print-ready PDF. Works offline, and CVs never leave your device."
+    stack: ["JavaScript", "HTML & CSS", "LaTeX", "Latin Modern"]
+    repo: ""
+    demo: "/tools/typeset/"
+    demo_label: "Open Typeset"
+    hue: 165
+    motif: page
   - slug: gstu-physics-smart-campus
     name: "GSTU Physics Smart Campus"
     featured: false

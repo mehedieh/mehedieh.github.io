@@ -55,7 +55,7 @@
       {% for s in p.stack[:5] %}<li class="pill">{{ s }}</li>{% endfor %}
     </ul>
     <div class="project-feature__foot">
-      <span class="text-link">Read the case study</span>
+      <span class="text-link">{{ "Read about it and try it" if p.demo and not (p.demo | is_external) and not p.repo else "Read the case study" }}</span>
       {% if p.license %}<span class="meta">{{ p.license }} licence</span>{% endif %}
     </div>
   </div>

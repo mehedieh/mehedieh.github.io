@@ -295,6 +295,20 @@ def project_art(motif: str, fit: str = "slice") -> str:
         parts.append(f'<path class="art-ink" d="{rail(14)}" fill="none" stroke-width="3"/>')
         for cx, cy in [(110, 300), (330, 150), (520, 96)]:
             parts.append(f'<circle class="art-fill" cx="{cx}" cy="{cy - 46}" r="6"/>')
+    elif motif == "page":
+        # A CV page: name, contact line, ruled section headings and text lines.
+        parts.append('<rect x="170" y="40" width="260" height="336" rx="6" fill="#fff" stroke-width="2" class="art-soft"/>')
+        parts.append('<rect class="art-fill" x="245" y="66" width="110" height="10" rx="3"/>')
+        parts.append('<rect x="225" y="86" width="150" height="4" rx="2" fill="#c9cdd3"/>')
+        y = 112
+        for widths in ([150, 190, 170], [200, 160], [180, 120]):
+            parts.append(f'<rect class="art-fill" x="192" y="{y}" width="70" height="6" rx="2"/>')
+            parts.append(f'<line class="art-ink" x1="192" y1="{y + 11}" x2="408" y2="{y + 11}" stroke-width="1.5"/>')
+            y += 22
+            for w in widths:
+                parts.append(f'<rect x="200" y="{y}" width="{w}" height="4" rx="2" fill="#d5d9de"/>')
+                y += 12
+            y += 14
     else:  # grid
         for i in range(10):
             for j in range(7):
@@ -413,6 +427,7 @@ class Builder:
         self.render("404.html", "/404.html", title="Page not found", sitemap=False, noindex=True,
                     canonical="/404.html", description="This page does not exist.")
 
+        self.pages.append(("/tools/typeset/", None))  # static app copied from static/tools/
         self.redirects()
         self.flush()
         self.feeds()

@@ -51,6 +51,13 @@ Every page is generated as `folder/index.html`, so refreshing a nested URL
 (`/writing/morin-mechanics-2-1/`) works on GitHub Pages. Old Jekyll URLs
 (`/physics/2022/08/03/kirchhoffs-law.html`, `/cs/`, `/thoughts/`, …) redirect to their new pages.
 
+## Tools
+
+`static/tools/typeset/index.html` is **Typeset — LaTeX CV Studio**, a self-contained offline CV builder,
+served at https://mehedieh.github.io/tools/typeset/. It is copied as-is by the build (with share
+metadata added); to update it, replace that file with a newer export of the app. Its case study is
+`content/projects/typeset.md`.
+
 ## Installable app (PWA)
 
 The site is a Progressive Web App: `static/site.webmanifest` (name, icons, shortcuts, screenshots)
