@@ -550,3 +550,20 @@ a.project-card:hover { text-decoration: none; border-color: var(--line-strong); 
 .lab > * { min-width: 0; }
 a.evidence-link { transition: border-color .25s, background-color .25s; }
 a.evidence-link:hover { text-decoration: none; border-color: var(--line-strong); }
+
+/* Typeset app link in the navigation */
+.nav__links a.nav__app {
+  display: inline-flex; align-items: center; gap: .35rem; margin-left: .35rem;
+  color: var(--accent); background: var(--accent-soft); font-weight: 550;
+}
+.nav__links a.nav__app:hover { color: var(--accent-ink); background: var(--accent-soft); filter: brightness(.97); }
+.nav__app-icon { width: 15px; height: 15px; flex: none; }
+.mobile-nav a.mobile-nav__app { color: var(--accent); }
+.mobile-nav a.mobile-nav__app small { display: block; font-size: .8rem; font-weight: 400; letter-spacing: 0; color: var(--muted); margin-top: .1rem; }
+.mobile-nav a.mobile-nav__app .nav__app-icon { width: 22px; height: 22px; }
+.mobile-nav a.mobile-nav__app { min-height: 68px; }
+@media (min-width: 880px) and (max-width: 1023px) {
+  .nav { gap: var(--space-3); }
+  .nav__links a { padding: .4rem .5rem; font-size: .86rem; }
+}
+.mobile-nav a.btn--primary { color: var(--bg); justify-content: center; min-height: 52px; font-size: 1rem; letter-spacing: -0.01em; }

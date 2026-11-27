@@ -5,6 +5,7 @@
   ("physics", "/physics/", "Physics"),
   ("writing", "/writing/", "Writing"),
 ] %}
+{% set app_item = ("tools", "/tools/typeset/", "Typeset") %}
 <header class="site-header">
   <nav class="wrap nav" aria-label="Main">
     <a class="brand" href="/" aria-label="{{ site.title }}, home">
@@ -15,6 +16,7 @@
       {% for key, href, label in nav_items %}
       <li><a href="{{ href }}"{% if nav == key %} aria-current="page"{% endif %}>{{ label }}</a></li>
       {% endfor %}
+      <li><a class="nav__app" href="{{ app_item[1] }}" title="Typeset — LaTeX CV Studio">{{ m.icon("doc", "nav__app-icon") }}{{ app_item[2] }}</a></li>
     </ul>
     <div class="nav__tools">
       <button class="icon-btn theme-toggle" type="button" aria-label="Switch theme" aria-pressed="false">
@@ -33,6 +35,7 @@
     {% for key, href, label in nav_items %}
     <li><a href="{{ href }}"{% if nav == key %} aria-current="page"{% endif %}>{{ label }}</a></li>
     {% endfor %}
+    <li><a class="mobile-nav__app" href="{{ app_item[1] }}"><span>{{ app_item[2] }}<small>LaTeX CV Studio</small></span>{{ m.icon("doc", "nav__app-icon") }}</a></li>
   </ul>
   <a class="btn btn--primary" href="/contact/">Get in touch</a>
 </div>
