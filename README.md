@@ -83,14 +83,32 @@ without touching Git. It commits `content/posts/YYYY-MM-DD-slug.md` (and any ima
 rebuilds the site. It can also open and edit existing posts; changing a post's slug keeps
 the old URL working with a redirect.
 
-One-time setup: create a **fine-grained personal access token** at
+One-time setup on each device: create a **fine-grained personal access token** at
 GitHub → Settings → Developer settings → Fine-grained tokens, with
 *Repository access: Only select repositories → mehedieh.github.io* and permissions
 **Contents: Read and write** and **Actions: Read** (optional, shows build progress).
-Paste it into Writer's settings (gear icon). The token is stored only in that browser and is
-sent only to api.github.com. Revoke it on GitHub if a device is lost.
+Open Writer, choose a password (12+ characters) and paste the token.
 
-The page is public but does nothing without a token, and it is excluded from search engines.
+### How Writer is secured
+
+GitHub Pages only serves public files, so a password check in page code could be bypassed by
+reading that code. Instead, the password protects the one thing that matters, the token:
+
+- The token is **encrypted with AES-256-GCM** using a key derived from your password with
+  **PBKDF2-SHA256 (600,000 iterations, random salt)**. Only the ciphertext is stored, in that
+  browser's local storage. The password itself is never stored anywhere.
+- The decrypted token exists only in memory while Writer is unlocked, and is sent only to
+  `api.github.com`.
+- **Auto-lock** after 15 minutes of inactivity or 5 minutes in a background tab; a lock button is in the top bar.
+- **Brute-force protection:** after 3 wrong passwords each attempt is delayed (5 s, 10 s, 20 s …),
+  and after 10 the encrypted token is erased.
+- Changing the password or token requires the current password.
+- A strict **Content Security Policy** allows scripts only from this site and network requests only
+  to GitHub, the page refuses to load inside frames, and it is hidden from search engines.
+- Forgot the password? Use **Reset Writer** on the lock screen and paste a token again. Lost a device?
+  Delete the token on GitHub; it stops working everywhere immediately.
+
+Drafts saved on the device are not encrypted (they are written to be published).
 
 ## Editing your details
 

@@ -34,7 +34,7 @@ body.writer { min-height: 100dvh; display: flex; flex-direction: column; }
 }
 .writer textarea { resize: vertical; line-height: 1.5; }
 .writer input:focus, .writer select:focus, .writer textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.writer input:invalid:not(:placeholder-shown) { border-color: #d14343; }
+.writer input:user-invalid { border-color: #d14343; }
 .w-title textarea {
   border: 0 !important; box-shadow: none !important; background: transparent; padding: 0; resize: none; overflow: hidden;
   font-family: var(--font-display); font-weight: 700; font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.4rem); letter-spacing: -0.035em; line-height: 1.1;
@@ -113,3 +113,20 @@ body.writer { min-height: 100dvh; display: flex; flex-direction: column; }
 .w-progress li.is-failed::before { background: #d14343; border-color: #d14343; }
 @keyframes w-spin { to { transform: rotate(360deg); } }
 .prose .w-pending-img { outline: 2px dashed var(--accent); outline-offset: 4px; }
+
+/* Lock screen */
+body.is-locked .w-bar, body.is-locked .w-main { visibility: hidden; }
+.w-lock { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 1.25rem; background: var(--bg); overflow-y: auto; }
+.w-lock[hidden] { display: none; }
+.w-lock__card { width: min(420px, 100%); display: grid; gap: 1rem; }
+.w-lock__mark { width: 44px; height: 44px; color: var(--ink); }
+.w-lock h1 { font-size: 1.6rem; letter-spacing: -0.03em; }
+.w-lock p { margin: 0; }
+.w-lock form { display: grid; gap: .85rem; }
+.w-lock .btn { justify-content: center; width: 100%; }
+.w-linkbtn { justify-self: start; background: none; border: 0; padding: .25rem 0; font: inherit; font-size: .85rem; color: var(--muted); cursor: pointer; text-decoration: underline; text-underline-offset: .2em; }
+.w-linkbtn:hover { color: var(--ink); }
+.w-fieldset { border: 1px solid var(--line); border-radius: 12px; padding: .9rem 1rem 1rem; margin: 0; display: grid; gap: .75rem; }
+.w-fieldset legend { padding: 0 .35rem; font-size: .85rem; color: var(--muted); }
+.w-danger { color: #d14343 !important; border-color: color-mix(in srgb, #d14343 40%, transparent) !important; margin-right: auto; }
+.w-strength-weak { color: #d14343; } .w-strength-ok { color: #c58a12; } .w-strength-strong { color: var(--accent); }

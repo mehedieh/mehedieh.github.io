@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
   <title>Writer — mehedieh.github.io</title>
-  <script>(function(){var d=document.documentElement,t;try{t=localStorage.getItem("theme")}catch(e){}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";d.setAttribute("data-theme",t);d.classList.add("js")})()</script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https:; font-src 'self' data:; connect-src 'self' https://api.github.com https://mehedieh.github.io; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <script src="/admin/boot.js"></script>
   <meta name="theme-color" content="#fbfbf9">
   <link rel="icon" href="/img/brand/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/main.css">
@@ -18,7 +20,7 @@
   <script src="/admin/vendor/katex.min.js" defer></script>
   <script src="/admin/app.js" defer></script>
 </head>
-<body class="writer">
+<body class="writer is-locked">
   <header class="w-bar">
     <button class="icon-btn" type="button" id="open-posts" aria-label="Your posts" aria-controls="posts-drawer" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
@@ -31,7 +33,10 @@
       <button class="icon-btn theme-toggle" type="button" id="theme" aria-label="Switch theme">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
       </button>
-      <button class="icon-btn" type="button" id="open-settings" aria-label="GitHub connection settings">
+      <button class="icon-btn" type="button" id="lock-now" aria-label="Lock Writer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      </button>
+      <button class="icon-btn" type="button" id="open-settings" aria-label="Settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
       </button>
       <button class="btn btn--ghost btn--small" type="button" id="toggle-preview" aria-pressed="false">Preview</button>
@@ -117,21 +122,28 @@
 
   <!-- Dialogs -->
   <dialog class="w-dialog" id="settings-dialog" aria-labelledby="settings-title">
-    <form method="dialog" id="settings-form">
-      <h2 id="settings-title">Connect to GitHub</h2>
-      <p class="muted">Posts are committed straight to your site's repository. Create a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained token</a> with access to <b>only</b> this repository and these permissions: <b>Contents: Read and write</b>, plus <b>Actions: Read</b> to see build progress.</p>
-      <label><span class="w-label">Personal access token</span><input id="s-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>
-      <div class="w-meta">
-        <label><span class="w-label">Owner</span><input id="s-owner" type="text" value="mehedieh"></label>
-        <label><span class="w-label">Repository</span><input id="s-repo" type="text" value="mehedieh.github.io"></label>
-        <label><span class="w-label">Branch</span><input id="s-branch" type="text" value="master"></label>
-      </div>
-      <label class="w-check"><input id="s-remember" type="checkbox" checked> Remember on this device (stored in this browser only)</label>
+    <form id="settings-form" novalidate>
+      <h2 id="settings-title">Settings</h2>
+      <fieldset class="w-fieldset">
+        <legend>GitHub connection</legend>
+        <label><span class="w-label">Replace access token</span><input id="s-token" type="password" autocomplete="off" spellcheck="false" placeholder="Leave blank to keep the current token"></label>
+        <div class="w-meta">
+          <label><span class="w-label">Owner</span><input id="s-owner" type="text" autocomplete="off"></label>
+          <label><span class="w-label">Repository</span><input id="s-repo" type="text" autocomplete="off"></label>
+          <label><span class="w-label">Branch</span><input id="s-branch" type="text" autocomplete="off"></label>
+        </div>
+      </fieldset>
+      <fieldset class="w-fieldset">
+        <legend>Change password</legend>
+        <label><span class="w-label">New password</span><input id="s-newpw" type="password" autocomplete="new-password" minlength="12"></label>
+        <label><span class="w-label">Repeat new password</span><input id="s-newpw2" type="password" autocomplete="new-password"></label>
+      </fieldset>
+      <label><span class="w-label">Current password (required to save changes)</span><input id="s-curpw" type="password" autocomplete="current-password" required></label>
       <p class="w-msg" id="settings-msg" role="status"></p>
       <div class="w-dialog__actions">
-        <button class="btn btn--ghost btn--small" type="button" id="s-forget">Forget token</button>
-        <button class="btn btn--ghost btn--small" value="cancel" formnovalidate>Cancel</button>
-        <button class="btn btn--primary btn--small" type="button" id="s-save">Test &amp; save</button>
+        <button class="btn btn--ghost btn--small w-danger" type="button" id="s-reset">Reset Writer</button>
+        <button class="btn btn--ghost btn--small" type="button" id="s-cancel">Cancel</button>
+        <button class="btn btn--primary btn--small" type="submit" id="s-save">Save</button>
       </div>
     </form>
   </dialog>
@@ -150,5 +162,38 @@
       </div>
     </div>
   </dialog>
+  <div class="w-lock" id="lock" role="dialog" aria-modal="true" aria-labelledby="lock-title">
+    <div class="w-lock__card">
+      <svg class="w-lock__mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><g stroke="var(--bg)" stroke-width="2" stroke-linecap="round" fill="none"><path d="M16 8 L11 17 L19.5 23"/></g><circle cx="16" cy="8" r="1.8" fill="var(--bg)"/><circle cx="11" cy="17" r="2.4" fill="var(--bg)"/><circle cx="19.5" cy="23" r="3" fill="var(--accent)"/></svg>
+      <h1 id="lock-title">Writer is locked</h1>
+      <p class="muted" id="lock-intro">Enter your password to unlock.</p>
+
+      <form id="unlock-form" novalidate>
+        <input type="text" name="username" value="writer" autocomplete="username" hidden>
+        <label><span class="visually-hidden">Password</span><input id="u-pw" type="password" autocomplete="current-password" placeholder="Password" required></label>
+        <button class="btn btn--primary" type="submit" id="u-submit">Unlock</button>
+      </form>
+
+      <form id="setup-form" novalidate hidden>
+        <input type="text" name="username" value="writer" autocomplete="username" hidden>
+        <label><span class="w-label">Create a password <span class="w-count" id="pw-strength"></span></span><input id="n-pw" type="password" autocomplete="new-password" minlength="12" placeholder="At least 12 characters" required></label>
+        <label><span class="w-label">Repeat password</span><input id="n-pw2" type="password" autocomplete="new-password" required></label>
+        <label><span class="w-label">GitHub access token</span><input id="n-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…" required></label>
+        <p class="muted w-small">Use a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained token</a> limited to this repository with <b>Contents: Read and write</b> and <b>Actions: Read</b>.</p>
+        <details class="w-more">
+          <summary>Repository settings</summary>
+          <div class="w-meta">
+            <label><span class="w-label">Owner</span><input id="n-owner" type="text" value="mehedieh" autocomplete="off"></label>
+            <label><span class="w-label">Repository</span><input id="n-repo" type="text" value="mehedieh.github.io" autocomplete="off"></label>
+            <label><span class="w-label">Branch</span><input id="n-branch" type="text" value="master" autocomplete="off"></label>
+          </div>
+        </details>
+        <button class="btn btn--primary" type="submit" id="n-submit">Secure &amp; connect</button>
+      </form>
+
+      <p class="w-msg" id="lock-msg" role="alert"></p>
+      <button class="w-linkbtn" type="button" id="lock-reset">Forgot your password? Reset Writer</button>
+    </div>
+  </div>
 </body>
 </html>

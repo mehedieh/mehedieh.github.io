@@ -44,16 +44,16 @@
   };
 
   /* ───────────── settings / GitHub ───────────── */
+  /* The decrypted connection lives only in this variable — never in storage. */
+  let session = null; // { key: CryptoKey, salt: Uint8Array, iter, data: { token, owner, repo, branch } }
   function settings() {
-    const s = store.get(SETTINGS_KEY) || {};
-    let token = s.token;
-    if (!token) { try { token = sessionStorage.getItem("writer:token") || ""; } catch { token = ""; } }
-    return { owner: s.owner || "mehedieh", repo: s.repo || "mehedieh.github.io", branch: s.branch || "master", token };
+    const d = (session && session.data) || {};
+    return { owner: d.owner || "mehedieh", repo: d.repo || "mehedieh.github.io", branch: d.branch || "master", token: d.token || "" };
   }
   async function gh(path, opts = {}) {
     const s = settings();
-    if (!s.token) throw Object.assign(new Error("Connect to GitHub first (gear icon)."), { code: "NO_TOKEN" });
-    const res = await fetch(API + path.replace("{repo}", `repos/${s.owner}/${s.repo}`), {
+    if (!s.token) throw Object.assign(new Error("Writer is locked. Unlock it to talk to GitHub."), { code: "NO_TOKEN" });
+    const res = await fetch(API + path.replace("{repo}", `repos/${encodeURIComponent(s.owner)}/${encodeURIComponent(s.repo)}`), {
       ...opts,
       headers: { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28",
         Authorization: `Bearer ${s.token}`, ...(opts.body ? { "Content-Type": "application/json" } : {}) },
@@ -247,33 +247,186 @@
     try { localStorage.setItem("theme", next); } catch {}
   });
 
-  /* ───────────── settings dialog ───────────── */
-  const sd = $("#settings-dialog"), smsg = $("#settings-msg");
-  function openSettings(msg = "") {
-    const s = settings();
-    $("#s-token").value = s.token || ""; $("#s-owner").value = s.owner; $("#s-repo").value = s.repo; $("#s-branch").value = s.branch;
-    smsg.textContent = msg; smsg.className = "w-msg"; sd.showModal();
+  /* ───────────── vault: password-encrypted token ─────────────
+     Password → PBKDF2-SHA256 (600k iterations, random 16-byte salt) → AES-256-GCM key.
+     Only the ciphertext is stored. A wrong password fails GCM authentication, so
+     nothing that could verify a guess offline is kept besides the ciphertext itself. */
+  const VAULT_KEY = "writer:vault", GUARD_KEY = "writer:guard";
+  const PBKDF2_ITER = 600000, AAD = new TextEncoder().encode("mehedieh-writer-vault-v1");
+  const IDLE_LOCK_MS = 15 * 60 * 1000, HIDDEN_LOCK_MS = 5 * 60 * 1000, MAX_FAILS = 10;
+  const enc = new TextEncoder(), dec = new TextDecoder();
+  const toB64 = (buf) => { let s = ""; new Uint8Array(buf).forEach((b) => (s += String.fromCharCode(b))); return btoa(s); };
+  const fromB64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+
+  async function deriveKey(password, salt, iterations) {
+    const base = await crypto.subtle.importKey("raw", enc.encode(password.normalize("NFKC")), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", hash: "SHA-256", salt, iterations }, base,
+      { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
   }
-  $("#open-settings").addEventListener("click", () => openSettings());
-  $("#s-save").addEventListener("click", async () => {
-    const token = $("#s-token").value.trim(), remember = $("#s-remember").checked;
-    const cfg = { owner: $("#s-owner").value.trim(), repo: $("#s-repo").value.trim(), branch: $("#s-branch").value.trim() || "master" };
-    store.set(SETTINGS_KEY, remember ? { ...cfg, token } : cfg);
-    try { remember ? sessionStorage.removeItem("writer:token") : sessionStorage.setItem("writer:token", token); } catch {}
-    smsg.textContent = "Testing connection…"; smsg.className = "w-msg";
+  async function sealVault(key, salt, iter, data) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv, additionalData: AAD }, key, enc.encode(JSON.stringify(data)));
+    store.set(VAULT_KEY, { v: 1, kdf: "PBKDF2-SHA256", iter, salt: toB64(salt), iv: toB64(iv), ct: toB64(ct) });
+  }
+  async function openVault(password) {
+    const v = store.get(VAULT_KEY);
+    const salt = fromB64(v.salt), key = await deriveKey(password, salt, v.iter);
+    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(v.iv), additionalData: AAD }, key, fromB64(v.ct));
+    return { key, salt, iter: v.iter, data: JSON.parse(dec.decode(pt)) };
+  }
+  function passwordProblem(pw, pw2, token) {
+    if (pw.length < 12) return "Use at least 12 characters.";
+    if (pw !== pw2) return "The two passwords don't match.";
+    if (token && pw === token) return "The password must not be the token itself.";
+    if (/^(.)\1+$/.test(pw) || /^(?:password|qwerty|123456|admin|writer)/i.test(pw)) return "That password is too easy to guess.";
+    return "";
+  }
+  function strength(pw) {
+    let score = Math.min(pw.length, 24) / 6 + [/[a-z]/, /[A-Z]/, /\d/, /[^\w\s]/, /\s/].filter((r) => r.test(pw)).length;
+    return pw.length < 12 ? ["Too short", "weak"] : score >= 7 ? ["Strong", "strong"] : score >= 5 ? ["Good", "ok"] : ["Weak", "weak"];
+  }
+  async function testConnection(data) {
+    const prev = session; session = { data };
     try {
       const repo = await gh("/{repo}");
       if (!repo.permissions || !repo.permissions.push) throw new Error("This token can read the repository but not write to it. Give it Contents: Read and write.");
-      await gh(`/{repo}/branches/${encodeURIComponent(cfg.branch)}`);
-      smsg.textContent = `Connected to ${repo.full_name} (${cfg.branch}).`; smsg.className = "w-msg is-ok";
-      postsCache = null; setStatus("Connected to GitHub", "ok");
-      setTimeout(() => sd.close(), 900);
-    } catch (err) { smsg.textContent = err.message; smsg.className = "w-msg is-error"; }
+      await gh(`/{repo}/branches/${encodeURIComponent(data.branch)}`);
+      return repo.full_name;
+    } finally { session = prev; }
+  }
+
+  /* Throttling: exponential delay after 3 failed attempts; vault wiped after 10. */
+  const guard = () => store.get(GUARD_KEY) || { fails: 0, until: 0 };
+  function registerFail() {
+    const g = guard(); g.fails += 1;
+    g.until = g.fails >= 3 ? Date.now() + Math.min(5000 * 2 ** (g.fails - 3), 15 * 60 * 1000) : 0;
+    store.set(GUARD_KEY, g); return g;
+  }
+
+  const lockEl = $("#lock"), lockMsg = $("#lock-msg");
+  const say = (msg, kind = "error") => { lockMsg.textContent = msg; lockMsg.className = "w-msg" + (msg && kind !== "info" ? " is-" + kind : ""); };
+  function showLock(mode, msg = "", kind = "info") {
+    session = null; postsCache = null;
+    document.querySelectorAll("dialog[open]").forEach((d) => d.close());
+    if (!drawer.hidden) openDrawer(false);
+    document.body.classList.add("is-locked");
+    $(".w-bar").inert = true; $("#main").inert = true;
+    lockEl.hidden = false;
+    const setup = mode === "setup";
+    $("#unlock-form").hidden = setup; $("#setup-form").hidden = !setup; $("#lock-reset").hidden = setup;
+    $("#lock-title").textContent = setup ? "Secure Writer" : "Writer is locked";
+    $("#lock-intro").textContent = setup
+      ? "Choose a password for this device. It encrypts your GitHub token, which is stored only in this browser. There's no way to recover the password, but you can always reset Writer and paste the token again."
+      : "Enter your password to unlock.";
+    say(msg, kind);
+    setTimeout(() => (setup ? $("#n-pw") : $("#u-pw")).focus(), 30);
+  }
+  function hideLock() {
+    lockEl.hidden = true; document.body.classList.remove("is-locked");
+    $(".w-bar").inert = false; $("#main").inert = false;
+    $("#u-pw").value = ""; ["#n-pw", "#n-pw2", "#n-token"].forEach((s) => ($(s).value = ""));
+    say("");
+    setStatus(`Unlocked — connected to ${settings().owner}/${settings().repo}`, "ok");
+    armIdle();
+  }
+  function lock(reason = "Locked.") { if (store.get(VAULT_KEY)) showLock("unlock", reason); }
+
+  $("#unlock-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const g = guard();
+    if (g.until > Date.now()) { say(`Too many attempts. Try again in ${Math.ceil((g.until - Date.now()) / 1000)} s.`); return; }
+    const btn = $("#u-submit"); btn.disabled = true; btn.textContent = "Unlocking…"; say("");
+    try {
+      session = await openVault($("#u-pw").value);
+      store.del(GUARD_KEY); hideLock();
+    } catch {
+      const ng = registerFail();
+      if (ng.fails >= MAX_FAILS) {
+        store.del(VAULT_KEY); store.del(GUARD_KEY);
+        showLock("setup", "Too many wrong passwords — the saved token was erased for safety. Set Writer up again.", "error");
+      } else {
+        say(`Wrong password.${ng.fails >= 3 ? ` Wait ${Math.ceil((ng.until - Date.now()) / 1000)} s before the next try.` : ""} ${MAX_FAILS - ng.fails} attempt${MAX_FAILS - ng.fails === 1 ? "" : "s"} left before the token is erased.`);
+        $("#u-pw").select();
+      }
+    } finally { btn.disabled = false; btn.textContent = "Unlock"; }
   });
-  $("#s-forget").addEventListener("click", () => {
-    const s = store.get(SETTINGS_KEY) || {}; delete s.token; store.set(SETTINGS_KEY, s);
-    try { sessionStorage.removeItem("writer:token"); } catch {}
-    $("#s-token").value = ""; smsg.textContent = "Token removed from this device."; smsg.className = "w-msg";
+
+  $("#n-pw").addEventListener("input", () => {
+    const pw = $("#n-pw").value, el = $("#pw-strength");
+    if (!pw) { el.textContent = ""; return; }
+    const [label, cls] = strength(pw); el.textContent = label; el.className = "w-count w-strength-" + cls;
+  });
+  $("#setup-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pw = $("#n-pw").value, token = $("#n-token").value.trim();
+    const data = { token, owner: $("#n-owner").value.trim(), repo: $("#n-repo").value.trim(), branch: $("#n-branch").value.trim() || "master" };
+    const problem = !token ? "Paste your GitHub access token." : passwordProblem(pw, $("#n-pw2").value, token);
+    if (problem) { say(problem); return; }
+    const btn = $("#n-submit"); btn.disabled = true; btn.textContent = "Checking token…"; say("");
+    try {
+      const name = await testConnection(data);
+      btn.textContent = "Encrypting…";
+      const salt = crypto.getRandomValues(new Uint8Array(16)), key = await deriveKey(pw, salt, PBKDF2_ITER);
+      await sealVault(key, salt, PBKDF2_ITER, data);
+      store.del(SETTINGS_KEY); try { sessionStorage.removeItem("writer:token"); } catch {} // remove any old plain-text token
+      store.del(GUARD_KEY);
+      session = { key, salt, iter: PBKDF2_ITER, data };
+      hideLock(); setStatus(`Secured and connected to ${name}`, "ok");
+    } catch (err) { say(err.message); }
+    finally { btn.disabled = false; btn.textContent = "Secure & connect"; }
+  });
+
+  function resetWriter() {
+    if (!confirm("Reset Writer on this device? The encrypted token is erased and you'll set a new password and paste a token again. Your posts on GitHub and your local draft are not affected.")) return;
+    store.del(VAULT_KEY); store.del(GUARD_KEY); store.del(SETTINGS_KEY);
+    showLock("setup", "Writer was reset. Choose a new password.");
+  }
+  $("#lock-reset").addEventListener("click", resetWriter);
+  $("#lock-now").addEventListener("click", () => lock("Locked."));
+
+  /* Auto-lock: 15 minutes without activity, or 5 minutes in a background tab. */
+  let idleTimer, hiddenAt = 0;
+  function armIdle() { clearTimeout(idleTimer); if (session) idleTimer = setTimeout(() => lock("Locked after 15 minutes of inactivity."), IDLE_LOCK_MS); }
+  ["pointerdown", "keydown", "input", "scroll"].forEach((ev) => document.addEventListener(ev, armIdle, { passive: true, capture: true }));
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) hiddenAt = Date.now();
+    else if (session && hiddenAt && Date.now() - hiddenAt > HIDDEN_LOCK_MS) lock("Locked while you were away.");
+  });
+
+  /* ───────────── settings dialog ───────────── */
+  const sd = $("#settings-dialog"), smsg = $("#settings-msg");
+  const sMsg = (m, k = "") => { smsg.textContent = m; smsg.className = "w-msg" + (k ? " is-" + k : ""); };
+  function openSettings(msg = "") {
+    if (!session) { lock("Unlock Writer to change settings."); return; }
+    const s = settings();
+    ["#s-token", "#s-newpw", "#s-newpw2", "#s-curpw"].forEach((x) => ($(x).value = ""));
+    $("#s-owner").value = s.owner; $("#s-repo").value = s.repo; $("#s-branch").value = s.branch;
+    sMsg(msg); sd.showModal();
+  }
+  $("#open-settings").addEventListener("click", () => openSettings());
+  $("#s-cancel").addEventListener("click", () => sd.close());
+  $("#s-reset").addEventListener("click", () => { sd.close(); resetWriter(); });
+  $("#settings-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const cur = $("#s-curpw").value, newpw = $("#s-newpw").value, token = $("#s-token").value.trim();
+    if (!cur) { sMsg("Enter your current password to save changes.", "error"); $("#s-curpw").focus(); return; }
+    if (newpw || $("#s-newpw2").value) { const p = passwordProblem(newpw, $("#s-newpw2").value, token || settings().token); if (p) { sMsg(p, "error"); return; } }
+    const btn = $("#s-save"); btn.disabled = true; sMsg("Checking…");
+    try {
+      let verified;
+      try { verified = await openVault(cur); } catch { const g = registerFail(); sMsg("Current password is wrong.", "error"); if (g.fails >= 3) { sd.close(); lock("Locked after repeated wrong passwords."); } return; }
+      store.del(GUARD_KEY);
+      const data = { ...verified.data, owner: $("#s-owner").value.trim() || verified.data.owner, repo: $("#s-repo").value.trim() || verified.data.repo,
+        branch: $("#s-branch").value.trim() || verified.data.branch, ...(token ? { token } : {}) };
+      const name = await testConnection(data);
+      let { key, salt, iter } = verified;
+      if (newpw) { salt = crypto.getRandomValues(new Uint8Array(16)); iter = PBKDF2_ITER; key = await deriveKey(newpw, salt, iter); }
+      await sealVault(key, salt, iter, data);
+      session = { key, salt, iter, data }; postsCache = null;
+      sMsg(`Saved. Connected to ${name}${newpw ? " — password changed" : ""}.`, "ok");
+      setTimeout(() => sd.close(), 1100);
+    } catch (err) { sMsg(err.message, "error"); }
+    finally { btn.disabled = false; }
   });
 
   /* ───────────── posts drawer ───────────── */
@@ -313,7 +466,7 @@
       });
     } catch (err) {
       note.textContent = err.message;
-      if (err.code === "NO_TOKEN") { openDrawer(false); openSettings("Add a token to load your posts."); }
+      if (err.code === "NO_TOKEN") { openDrawer(false); lock("Unlock Writer to load your posts."); }
     }
   }
   function isDirty() { return f.body.value.trim() || f.title.value.trim(); }
@@ -361,7 +514,7 @@
   $("#publish").addEventListener("click", async () => {
     const errs = validate();
     if (errs.length) { setStatus(errs[0], "error"); (errs[0].includes("title") ? f.title : errs[0].includes("slug") ? f.slug : errs[0].includes("description") ? f.description : f.body).focus(); return; }
-    if (!settings().token) { openSettings("Connect to GitHub to publish."); return; }
+    if (!settings().token) { lock("Unlock Writer to publish."); return; }
     const dl = $("#publish-summary"); dl.innerHTML = "";
     const path = filePath();
     row(dl, "Title", f.title.value.trim());
@@ -486,5 +639,12 @@
   load(saved || { date: today(), category: "cybersecurity" });
   if (saved?.sourcePath) setStatus(`Editing ${saved.sourcePath.split("/").pop()}`);
   else if (saved && (saved.title || saved.body)) setStatus("Restored your unsaved draft");
-  else setStatus(settings().token ? "Connected to GitHub" : "Not connected — tap the gear to add a token");
+  if (!window.crypto || !crypto.subtle) {
+    showLock("setup", "This browser can't encrypt the token (open Writer over https in an up-to-date browser).", "error");
+    $("#setup-form").hidden = true;
+  } else if (store.get(VAULT_KEY)) {
+    showLock("unlock");
+  } else {
+    showLock("setup", (store.get(SETTINGS_KEY) || {}).token ? "Writer now protects your token with a password. Paste the token once more to finish." : "");
+  }
 })();
