@@ -3,14 +3,21 @@
    Tokens → base → layout → components → pages. No framework, no web fonts.
    ========================================================================== */
 
+/* ---- Fonts -------------------------------------------------------------
+   Instrument Serif and Geist Mono are self-hosted (SIL Open Font License, see
+   /fonts/). Geist (sans) loads from Google Fonts in base.html. */
+@font-face { font-family: "Instrument Serif"; src: url("/fonts/InstrumentSerif-Regular.woff") format("woff"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Instrument Serif"; src: url("/fonts/InstrumentSerif-Italic.woff") format("woff"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Geist Mono"; src: url("/fonts/GeistMono-Regular.woff") format("woff"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Geist Mono"; src: url("/fonts/GeistMono-Bold.woff") format("woff"); font-weight: 700; font-style: normal; font-display: swap; }
+
 /* ---- Tokens ------------------------------------------------------------- */
 :root {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue",
-    "Segoe UI Variable Text", "Segoe UI", Inter, Roboto, "Noto Sans", Ubuntu, Cantarell, Arial, sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue",
-    "Segoe UI Variable Display", "Segoe UI", Inter, Roboto, "Noto Sans", Arial, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Code", Consolas,
-    "Liberation Mono", "DejaVu Sans Mono", monospace;
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI",
+    Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Instrument Serif", "New York", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Code", Consolas,
+    "Liberation Mono", monospace;
   --font-serif: "New York", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
 
   /* Type scale (1.25, with a larger display step) */
@@ -105,9 +112,13 @@ img, svg, canvas, video { display: block; max-width: 100%; }
 img { height: auto; }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
-h1, h2, h3, h4 { font-family: var(--font-display); color: var(--ink); margin: 0; font-weight: 650; }
-h1 { font-size: var(--step-4); line-height: 1.05; letter-spacing: -0.035em; }
-h2 { font-size: var(--step-3); line-height: 1.12; letter-spacing: -0.028em; }
+h1, h2, h3, h4 { color: var(--ink); margin: 0; }
+/* Main headings: Instrument Serif (single weight; size does the work) */
+h1, h2 { font-family: var(--font-display); font-weight: 400; }
+h1 { font-size: clamp(2.6rem, 1.7rem + 3.6vw, 4.4rem); line-height: 1.02; letter-spacing: -0.018em; }
+h2 { font-size: clamp(2rem, 1.5rem + 1.8vw, 2.75rem); line-height: 1.08; letter-spacing: -0.012em; }
+/* Sub-headings stay in Geist */
+h3, h4 { font-family: var(--font-sans); font-weight: 600; }
 h3 { font-size: var(--step-1); line-height: 1.3; letter-spacing: -0.015em; }
 p { margin: 0 0 var(--space-4); }
 code, kbd, pre, .mono { font-family: var(--font-mono); font-size: .9em; letter-spacing: 0; }
@@ -157,13 +168,13 @@ main { display: block; min-height: 60vh; }
 }
 .site-header.is-scrolled { border-bottom-color: var(--line); }
 .nav { display: flex; align-items: center; gap: var(--space-5); height: 60px; }
-.brand { display: inline-flex; align-items: center; gap: .6rem; color: var(--ink); font-weight: 620; letter-spacing: -0.02em; font-size: 1.02rem; }
+.brand { display: inline-flex; align-items: center; gap: .6rem; color: var(--ink); font-weight: 600; letter-spacing: -0.02em; font-size: 1.02rem; }
 .brand:hover { text-decoration: none; }
 .brand__mark { width: 26px; height: 26px; flex: none; }
 .nav__links { display: flex; gap: .15rem; margin: 0 0 0 auto; padding: 0; list-style: none; }
 .nav__links a {
   display: block; padding: .4rem .7rem; border-radius: 999px; color: var(--ink-2);
-  font-size: .9rem; letter-spacing: -0.01em; transition: color .2s, background-color .2s;
+  font-size: .9rem; font-weight: 500; letter-spacing: -0.01em; transition: color .2s, background-color .2s;
 }
 .nav__links a:hover { color: var(--ink); background: var(--surface); text-decoration: none; }
 .nav__links a[aria-current="page"] { color: var(--ink); background: var(--surface-2); }
@@ -256,19 +267,19 @@ body.menu-open { overflow: hidden; }
 @media (min-width: 960px) { .hero__grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
 .hero__name { font-size: 1rem; color: var(--muted); font-weight: 500; margin-bottom: var(--space-5); display: flex; align-items: center; gap: .6rem; }
 .hero__name img { width: 32px; height: 32px; border-radius: 50%; }
-.hero h1 { font-size: clamp(2.5rem, 1.2rem + 4.4vw, 4.6rem); line-height: 1.03; letter-spacing: -0.045em; font-weight: 700; }
+.hero h1 { font-size: clamp(2.75rem, 1.3rem + 5vw, 5.1rem); line-height: .98; letter-spacing: -0.022em; font-weight: 400; text-wrap: balance; }
 .hero h1 .line { display: block; }
 .hero h1 .line--quiet { color: var(--muted); }
 .hero .lede { margin: var(--space-5) 0 var(--space-6); }
-.hero__visual { position: relative; aspect-ratio: 1 / 1; max-width: 480px; width: 100%; justify-self: center; }
-.hero__visual canvas { width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.hero__visual { position: relative; max-width: 480px; width: 100%; justify-self: center; }
+.hero__visual canvas { width: 100%; cursor: grab; -webkit-tap-highlight-color: transparent; }
 .hero__visual canvas:active { cursor: grabbing; }
 .hero__caption {
-  position: absolute; left: 0; right: 0; bottom: -.25rem; text-align: center;
-  font: .74rem/1.4 var(--font-mono); color: var(--muted);
+  margin-top: .25rem; text-align: center; text-wrap: balance;
+  font: .74rem/1.5 var(--font-mono); color: var(--muted);
 }
-.hero__caption button { font: inherit; color: var(--accent); background: none; border: 0; padding: 0 .2rem; cursor: pointer; }
-@media (max-width: 959px) { .hero__visual { max-width: 360px; order: -1; margin-bottom: -1rem; } }
+.hero__caption button { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: .2em; }
+@media (max-width: 959px) { .hero__visual { max-width: min(300px, 78vw); margin-top: var(--space-3); } .hero__caption { font-size: .7rem; } }
 
 /* Hero entrance — the one orchestrated moment */
 @media (prefers-reduced-motion: no-preference) {
@@ -285,7 +296,7 @@ body.menu-open { overflow: hidden; }
 .discipline { background: var(--bg); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-3); color: var(--ink); transition: background-color .25s; }
 .discipline:hover { background: var(--bg-elev); text-decoration: none; }
 .discipline__icon { width: 36px; height: 36px; color: var(--accent); }
-.discipline h3 { font-size: var(--step-2); letter-spacing: -0.03em; }
+.discipline h3 { font-family: var(--font-display); font-weight: 400; font-size: 2rem; letter-spacing: -0.01em; line-height: 1.1; }
 .discipline p { color: var(--muted); margin: 0; }
 .discipline .text-link { margin-top: auto; padding-top: var(--space-3); color: var(--accent); }
 
@@ -297,7 +308,7 @@ body.menu-open { overflow: hidden; }
 .project-feature:hover { text-decoration: none; box-shadow: var(--shadow-lift); border-color: var(--line-strong); }
 @container (min-width: 760px) { .project-feature { grid-template-columns: 1.1fr 1fr; } .project-feature--flip .project-art { order: 2; } }
 .project-feature__body { padding: clamp(1.5rem, 3.5vw, 2.75rem); display: flex; flex-direction: column; gap: var(--space-4); }
-.project-feature__body h3 { font-size: var(--step-3); letter-spacing: -0.035em; }
+.project-feature__body h3 { font-family: var(--font-display); font-weight: 400; font-size: clamp(2rem, 1.5rem + 1.8vw, 2.75rem); line-height: 1.05; letter-spacing: -0.012em; }
 .project-feature__body p { color: var(--ink-2); margin: 0; max-width: 46ch; }
 .project-feature__foot { margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); padding-top: var(--space-3); }
 .project-stack { display: grid; gap: var(--space-5); container-type: inline-size; }
@@ -354,7 +365,7 @@ a.project-card:hover { text-decoration: none; border-color: var(--line-strong); 
 .prose { max-width: var(--measure); font-size: 1.0625rem; line-height: 1.72; color: var(--ink-2); }
 .prose > * + * { margin-top: 1.15em; }
 .prose p, .prose ul, .prose ol { margin-bottom: 0; }
-.prose h2 { font-size: 1.65rem; margin-top: 2.2em; scroll-margin-top: 5.5rem; }
+.prose h2 { font-size: 2rem; margin-top: 2em; scroll-margin-top: 5.5rem; }
 .prose h3 { font-size: 1.25rem; margin-top: 1.8em; scroll-margin-top: 5.5rem; }
 .prose h4 { font-size: 1.05rem; margin-top: 1.6em; }
 .prose h2 + *, .prose h3 + * { margin-top: .6em; }
@@ -409,7 +420,7 @@ a.project-card:hover { text-decoration: none; border-color: var(--line-strong); 
 @media (min-width: 760px) { .post-row a { grid-template-columns: 9.5rem minmax(0, 1fr) auto; align-items: baseline; } }
 .post-row a:hover { text-decoration: none; }
 .post-row a:hover h3 { color: var(--accent); }
-.post-row h3 { font-size: 1.2rem; transition: color .2s; }
+.post-row h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.6rem; line-height: 1.15; letter-spacing: -0.008em; transition: color .2s; }
 .post-row p { margin: .35rem 0 0; color: var(--muted); font-size: .95rem; max-width: 62ch; }
 .post-row .meta { white-space: nowrap; }
 .empty { padding: var(--space-7) 0; color: var(--muted); }
@@ -418,7 +429,7 @@ a.project-card:hover { text-decoration: none; border-color: var(--line-strong); 
 .progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 60; background: transparent; pointer-events: none; }
 .progress span { display: block; height: 100%; width: 100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
 .article-head { padding: var(--space-8) 0 var(--space-6); }
-.article-head h1 { max-width: 22ch; font-size: var(--step-4); }
+.article-head h1 { max-width: 22ch; }
 .article-head .lede { margin-top: var(--space-4); }
 .article-head .meta-list { margin-top: var(--space-5); }
 .article-layout { display: grid; gap: var(--space-6); padding-bottom: var(--space-7); }
@@ -489,7 +500,7 @@ a.project-card:hover { text-decoration: none; border-color: var(--line-strong); 
 /* Pendulum lab on Physics page */
 .lab { display: grid; gap: var(--space-6); border: 1px solid var(--line); border-radius: var(--radius-xl); padding: clamp(1.25rem, 3vw, 2.25rem); background: var(--bg-elev); }
 @media (min-width: 900px) { .lab { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; } }
-.lab canvas { width: 100%; aspect-ratio: 1; max-width: 440px; margin: 0 auto; touch-action: none; cursor: grab; }
+.lab canvas { width: 100%; max-width: 440px; margin: 0 auto; cursor: grab; -webkit-tap-highlight-color: transparent; }
 .lab .math-display { overflow-x: auto; font-size: .92rem; }
 
 /* Contact */
@@ -500,7 +511,7 @@ a.project-card:hover { text-decoration: none; border-color: var(--line-strong); 
 .contact-list a:hover .contact-list__value { color: var(--accent); }
 .contact-list svg { width: 20px; height: 20px; color: var(--muted); }
 .contact-list__label { font-size: .85rem; color: var(--muted); display: block; }
-.contact-list__value { font-size: var(--step-1); font-weight: 550; letter-spacing: -0.02em; transition: color .2s; word-break: break-word; }
+.contact-list__value { font-size: var(--step-1); font-weight: 500; letter-spacing: -0.015em; transition: color .2s; word-break: break-word; }
 .contact-list .arrow { color: var(--muted); }
 
 /* CTA band */
@@ -567,3 +578,9 @@ a.evidence-link:hover { text-decoration: none; border-color: var(--line-strong);
   .nav__links a { padding: .4rem .5rem; font-size: .86rem; }
 }
 .mobile-nav a.btn--primary { color: var(--bg); justify-content: center; min-height: 52px; font-size: 1rem; letter-spacing: -0.01em; }
+
+/* Numbers and data in Geist Mono */
+time, .meta, .pill, .count, .w-count, .status, .crumb [aria-current], .tabular { font-variant-numeric: tabular-nums; }
+.hero__name { font-weight: 500; }
+.text-link { font-weight: 500; }
+.split__head h2 { max-width: 14ch; }

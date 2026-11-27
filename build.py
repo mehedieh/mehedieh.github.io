@@ -443,8 +443,8 @@ class Builder:
                   f"/css/highlight.css?v={self.asset_version('css/main.css')}", "/katex/katex.min.css", "/favicon.ico", "/img/brand/icon.svg",
                   "/img/brand/icon-192.png", "/img/me-320.webp", "/img/me-320.jpg", "/img/me-640.webp", "/site.webmanifest", "/search.json"]
         # Everything a reader needs offline: math fonts and article figures.
-        for folder in ("katex/fonts", "img/posts"):
-            assets += sorted("/" + p.relative_to(OUT).as_posix() for p in (OUT / folder).glob("*") if p.suffix in {".woff2", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif"})
+        for folder in ("fonts", "katex/fonts", "img/posts"):
+            assets += sorted("/" + p.relative_to(OUT).as_posix() for p in (OUT / folder).glob("*") if p.suffix in {".woff", ".woff2", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif"})
         h = hashlib.sha1()
         for p in sorted(OUT.rglob("*")):
             if p.is_file() and p.name != "sw.js" and "admin" not in p.parts:

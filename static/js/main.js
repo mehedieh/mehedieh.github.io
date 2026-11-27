@@ -105,9 +105,12 @@
       return [x1, y1, x1 + scale * Math.sin(s[1]), y1 + scale * Math.cos(s[1])];
     };
     const resize = () => {
+      // Size from the width only and force a square: iOS Safari resolves percentage
+      // heights differently, which would otherwise stretch the drawing into an oval.
       const r = canvas.getBoundingClientRect();
       dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = r.width; H = r.height;
+      W = H = Math.round(r.width);
+      canvas.style.height = H + "px";
       canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       scale = Math.min(W, H) * 0.235; ox = W / 2; oy = H / 2;
@@ -165,7 +168,7 @@
     canvas.addEventListener("pointerdown", (e) => {
       const [px, py] = local(e), [x1, y1, x2, y2] = points();
       const d2 = Math.hypot(px - x2, py - y2), d1 = Math.hypot(px - x1, py - y1);
-      drag = d2 < 28 ? 2 : d1 < 28 ? 1 : 0;
+      drag = d2 < 34 ? 2 : d1 < 34 ? 1 : 0;
       if (drag) { canvas.setPointerCapture(e.pointerId); trail.length = 0; e.preventDefault(); }
     });
     canvas.addEventListener("pointermove", (e) => {
@@ -184,7 +187,16 @@
     }
     document.addEventListener("visibilitychange", kick);
     document.addEventListener("themechange", () => { readColors(); draw(); });
-    window.addEventListener("resize", () => { resize(); });
+    let lastW = 0;
+    const onResize = () => { const w = Math.round(canvas.getBoundingClientRect().width); if (w && w !== lastW) { lastW = w; resize(); } };
+    if ("ResizeObserver" in window) new ResizeObserver(onResize).observe(canvas.parentElement);
+    else window.addEventListener("resize", onResize);
+    // On touch screens, only a touch that starts on a bob drags it; anywhere else scrolls the page.
+    canvas.addEventListener("touchstart", (e) => {
+      const r = canvas.getBoundingClientRect(), t0 = e.touches[0];
+      const px = t0.clientX - r.left, py = t0.clientY - r.top, [x1, y1, x2, y2] = points();
+      if (Math.hypot(px - x2, py - y2) < 34 || Math.hypot(px - x1, py - y1) < 34) e.preventDefault();
+    }, { passive: false });
 
     readColors(); resize();
     if (!running) { for (let i = 0; i < 240; i++) step(1 / 60); draw(); } // reduced motion: a still frame with history

@@ -87,14 +87,14 @@ def og_card(name: str, lines: list[str]) -> Image.Image:
     for (cx, cy, r, c) in [(ox, oy, 4, INK), (x1, y1, 8, INK), (x2, y2, 10, ACCENT)]:
         d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=c)
 
-    bold = font(["/usr/share/fonts/opentype/inter/InterDisplay-Bold.otf", "DejaVuSans-Bold.ttf"], 64)
-    reg = font(["/usr/share/fonts/opentype/inter/Inter-Medium.otf", "DejaVuSans.ttf"], 30)
+    bold = font([str(STATIC / ".." / "scripts" / "fonts" / "InstrumentSerif-Regular.ttf"), "/usr/share/fonts/opentype/inter/InterDisplay-Bold.otf"], 84)
+    reg = font([str(STATIC / ".." / "scripts" / "fonts" / "GeistMono-Regular.ttf"), "/usr/share/fonts/opentype/inter/Inter-Medium.otf"], 28)
     im.paste(mark(56), (80, 80), mark(56))
     d.text((152, 90), name, font=reg, fill=INK)
-    y = 230
+    y = 205
     for i, line in enumerate(lines):
         d.text((80, y), line, font=bold, fill=INK if i < len(lines) - 1 else (107, 107, 112))
-        y += 78
+        y += 86
     d.text((80, 540), "mehedieh.github.io", font=reg, fill=(107, 107, 112))
     return im
 
