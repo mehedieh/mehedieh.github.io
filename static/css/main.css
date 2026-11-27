@@ -4,10 +4,8 @@
    ========================================================================== */
 
 /* ---- Fonts -------------------------------------------------------------
-   Instrument Serif and Geist Mono are self-hosted (SIL Open Font License, see
-   /fonts/). Geist (sans) loads from Google Fonts in base.html. */
-@font-face { font-family: "Instrument Serif"; src: url("/fonts/InstrumentSerif-Regular.woff") format("woff"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "Instrument Serif"; src: url("/fonts/InstrumentSerif-Italic.woff") format("woff"); font-weight: 400; font-style: italic; font-display: swap; }
+   Lora (headings, reading text) and Geist (interface) load from Google Fonts in
+   base.html. Geist Mono (numbers, data) is self-hosted, SIL Open Font License. */
 @font-face { font-family: "Geist Mono"; src: url("/fonts/GeistMono-Regular.woff") format("woff"); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: "Geist Mono"; src: url("/fonts/GeistMono-Bold.woff") format("woff"); font-weight: 700; font-style: normal; font-display: swap; }
 
@@ -15,7 +13,7 @@
 :root {
   --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI",
     Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: "Instrument Serif", "New York", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-display: "Lora", "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Code", Consolas,
     "Liberation Mono", monospace;
   --font-serif: "New York", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
@@ -114,9 +112,9 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
 h1, h2, h3, h4 { color: var(--ink); margin: 0; }
 /* Main headings: Instrument Serif (single weight; size does the work) */
-h1, h2 { font-family: var(--font-display); font-weight: 400; }
-h1 { font-size: clamp(2.6rem, 1.7rem + 3.6vw, 4.4rem); line-height: 1.02; letter-spacing: -0.018em; }
-h2 { font-size: clamp(2rem, 1.5rem + 1.8vw, 2.75rem); line-height: 1.08; letter-spacing: -0.012em; }
+h1, h2 { font-family: var(--font-display); font-weight: 600; }
+h1 { font-size: clamp(2.2rem, 1.6rem + 2.6vw, 3.5rem); line-height: 1.1; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.1rem); line-height: 1.18; letter-spacing: -0.015em; }
 /* Sub-headings stay in Geist */
 h3, h4 { font-family: var(--font-sans); font-weight: 600; }
 h3 { font-size: var(--step-1); line-height: 1.3; letter-spacing: -0.015em; }
@@ -267,7 +265,8 @@ body.menu-open { overflow: hidden; }
 @media (min-width: 960px) { .hero__grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
 .hero__name { font-size: 1rem; color: var(--muted); font-weight: 500; margin-bottom: var(--space-5); display: flex; align-items: center; gap: .6rem; }
 .hero__name img { width: 32px; height: 32px; border-radius: 50%; }
-.hero h1 { font-size: clamp(2.75rem, 1.3rem + 5vw, 5.1rem); line-height: .98; letter-spacing: -0.022em; font-weight: 400; text-wrap: balance; }
+.hero h1 { font-size: clamp(2.3rem, 1.3rem + 3.9vw, 4.2rem); line-height: 1.06; letter-spacing: -0.025em; font-weight: 600; text-wrap: balance; }
+.hero h1 .line--quiet { font-style: italic; font-weight: 500; }
 .hero h1 .line { display: block; }
 .hero h1 .line--quiet { color: var(--muted); }
 .hero .lede { margin: var(--space-5) 0 var(--space-6); }
@@ -296,7 +295,7 @@ body.menu-open { overflow: hidden; }
 .discipline { background: var(--bg); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-3); color: var(--ink); transition: background-color .25s; }
 .discipline:hover { background: var(--bg-elev); text-decoration: none; }
 .discipline__icon { width: 36px; height: 36px; color: var(--accent); }
-.discipline h3 { font-family: var(--font-display); font-weight: 400; font-size: 2rem; letter-spacing: -0.01em; line-height: 1.1; }
+.discipline h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.55rem; letter-spacing: -0.015em; line-height: 1.2; }
 .discipline p { color: var(--muted); margin: 0; }
 .discipline .text-link { margin-top: auto; padding-top: var(--space-3); color: var(--accent); }
 
@@ -308,7 +307,7 @@ body.menu-open { overflow: hidden; }
 .project-feature:hover { text-decoration: none; box-shadow: var(--shadow-lift); border-color: var(--line-strong); }
 @container (min-width: 760px) { .project-feature { grid-template-columns: 1.1fr 1fr; } .project-feature--flip .project-art { order: 2; } }
 .project-feature__body { padding: clamp(1.5rem, 3.5vw, 2.75rem); display: flex; flex-direction: column; gap: var(--space-4); }
-.project-feature__body h3 { font-family: var(--font-display); font-weight: 400; font-size: clamp(2rem, 1.5rem + 1.8vw, 2.75rem); line-height: 1.05; letter-spacing: -0.012em; }
+.project-feature__body h3 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.1rem); line-height: 1.15; letter-spacing: -0.015em; }
 .project-feature__body p { color: var(--ink-2); margin: 0; max-width: 46ch; }
 .project-feature__foot { margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); padding-top: var(--space-3); }
 .project-stack { display: grid; gap: var(--space-5); container-type: inline-size; }
@@ -365,7 +364,7 @@ a.project-card:hover { text-decoration: none; border-color: var(--line-strong); 
 .prose { max-width: var(--measure); font-size: 1.0625rem; line-height: 1.72; color: var(--ink-2); }
 .prose > * + * { margin-top: 1.15em; }
 .prose p, .prose ul, .prose ol { margin-bottom: 0; }
-.prose h2 { font-size: 2rem; margin-top: 2em; scroll-margin-top: 5.5rem; }
+.prose h2 { font-size: 1.6rem; margin-top: 2em; scroll-margin-top: 5.5rem; }
 .prose h3 { font-size: 1.25rem; margin-top: 1.8em; scroll-margin-top: 5.5rem; }
 .prose h4 { font-size: 1.05rem; margin-top: 1.6em; }
 .prose h2 + *, .prose h3 + * { margin-top: .6em; }
@@ -420,7 +419,7 @@ a.project-card:hover { text-decoration: none; border-color: var(--line-strong); 
 @media (min-width: 760px) { .post-row a { grid-template-columns: 9.5rem minmax(0, 1fr) auto; align-items: baseline; } }
 .post-row a:hover { text-decoration: none; }
 .post-row a:hover h3 { color: var(--accent); }
-.post-row h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.6rem; line-height: 1.15; letter-spacing: -0.008em; transition: color .2s; }
+.post-row h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; line-height: 1.25; letter-spacing: -0.01em; transition: color .2s; }
 .post-row p { margin: .35rem 0 0; color: var(--muted); font-size: .95rem; max-width: 62ch; }
 .post-row .meta { white-space: nowrap; }
 .empty { padding: var(--space-7) 0; color: var(--muted); }
@@ -584,3 +583,11 @@ time, .meta, .pill, .count, .w-count, .status, .crumb [aria-current], .tabular {
 .hero__name { font-weight: 500; }
 .text-link { font-weight: 500; }
 .split__head h2 { max-width: 14ch; }
+
+/* Academic reading: long-form text in Lora, like a well-set paper */
+.prose { font-family: var(--font-display); font-size: 1.1rem; line-height: 1.78; color: var(--ink-2); }
+.prose h3, .prose h4 { font-family: var(--font-display); font-weight: 600; }
+.prose li::marker { font-family: var(--font-sans); }
+.prose figcaption, .prose table { font-family: var(--font-sans); }
+.lede { font-family: var(--font-display); font-size: 1.22rem; line-height: 1.6; letter-spacing: 0; }
+.split__head h2 { max-width: 16ch; }

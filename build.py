@@ -309,38 +309,6 @@ def project_art(motif: str, fit: str = "slice") -> str:
                 parts.append(f'<rect x="200" y="{y}" width="{w}" height="4" rx="2" fill="#d5d9de"/>')
                 y += 12
             y += 14
-    elif motif == "network":
-        # A monitored host (shield) with outbound connections; one destination is flagged and
-        # linked by a dashed line to a microphone: device activity correlated with traffic.
-        cx, cy = 330, 210
-        nodes = [(560, 92), (575, 210), (548, 322), (440, 360), (210, 352), (120, 300)]
-        flagged = nodes[0]
-        for k, (nx, ny) in enumerate(nodes):
-            parts.append(f'<line class="art-soft" x1="{cx}" y1="{cy}" x2="{nx}" y2="{ny}" stroke-width="1.6"/>')
-            for f in (0.35, 0.62):  # packets in flight
-                px, py = cx + (nx - cx) * (f + 0.05 * (k % 3)), cy + (ny - cy) * (f + 0.05 * (k % 3))
-                parts.append(f'<circle class="art-fill" cx="{px:.1f}" cy="{py:.1f}" r="2.6" opacity=".55"/>')
-        for nx, ny in nodes[1:]:
-            parts.append(f'<circle class="art-fill" cx="{nx}" cy="{ny}" r="7" opacity=".6"/>')
-        fx, fy = flagged
-        parts.append(f'<circle class="art-ink" cx="{fx}" cy="{fy}" r="22" fill="none" stroke-width="2" stroke-dasharray="5 5"/>')
-        parts.append(f'<circle class="art-ink" cx="{fx}" cy="{fy}" r="34" fill="none" stroke-width="1.2" opacity=".5"/>')
-        parts.append(f'<circle class="art-fill" cx="{fx}" cy="{fy}" r="10"/>')
-        # shield
-        parts.append(f'<path class="art-ink" d="M{cx} {cy - 58} L{cx + 46} {cy - 40} V{cy + 2} '
-                     f'C{cx + 46} {cy + 34} {cx + 26} {cy + 54} {cx} {cy + 64} '
-                     f'C{cx - 26} {cy + 54} {cx - 46} {cy + 34} {cx - 46} {cy + 2} V{cy - 40} Z" '
-                     'fill="none" stroke-width="3.5" stroke-linejoin="round"/>')
-        parts.append(f'<circle class="art-fill" cx="{cx}" cy="{cy}" r="9"/>')
-        # microphone with sound arcs
-        mx, my = 118, 112
-        parts.append(f'<rect class="art-ink" x="{mx - 13}" y="{my - 34}" width="26" height="46" rx="13" fill="none" stroke-width="3"/>')
-        parts.append(f'<path class="art-ink" d="M{mx - 24} {my - 2} a24 24 0 0 0 48 0" fill="none" stroke-width="3" stroke-linecap="round"/>')
-        parts.append(f'<line class="art-ink" x1="{mx}" y1="{my + 22}" x2="{mx}" y2="{my + 38}" stroke-width="3" stroke-linecap="round"/>')
-        for r in (40, 54):
-            parts.append(f'<path class="art-soft" d="M{mx + r * 0.7:.1f} {my - r * 0.7 - 10:.1f} a{r} {r} 0 0 1 0 {r * 1.4:.1f}" fill="none" stroke-width="2" stroke-linecap="round"/>')
-        parts.append(f'<path class="art-ink" d="M{mx + 60} {my - 40} C {mx + 200} {my - 120}, {fx - 160} {fy - 60}, {fx - 36} {fy - 6}" '
-                     'fill="none" stroke-width="2" stroke-dasharray="3 7" stroke-linecap="round"/>')
     else:  # grid
         for i in range(10):
             for j in range(7):
