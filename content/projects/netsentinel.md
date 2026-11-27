@@ -5,6 +5,8 @@ platform: "Windows 11 (Windows 10 1903+) · Python 3.12+ or a portable .exe"
 
 ## What it does
 
+![NetSentinel's Security Overview: active connections, upload and download totals, suspicious-connection count, microphone and camera status, a live network activity timeline and the monitoring-capabilities panel](/img/projects/netsentinel-overview.webp)
+
 NetSentinel is a desktop monitor for your own Windows PC. It runs locally, needs no account or cloud service, and shows:
 
 - **Every live connection**: the responsible process, its executable path, publisher and code-signing status, parent process, destination, port, protocol and state
